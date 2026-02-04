@@ -247,3 +247,26 @@ body{
   html{ scroll-behavior: auto; }
   .wheel, .blob{ animation: none !important; }
 }
+.wireframe-wrap svg{
+  width: min(900px, 92vw);
+  height: auto;
+  display: block;
+  margin: 30px 0 0;
+}
+
+/* Make it wireframe-like */
+.wireframe-wrap svg path,
+.wireframe-wrap svg line,
+.wireframe-wrap svg polyline,
+.wireframe-wrap svg polygon,
+.wireframe-wrap svg circle,
+.wireframe-wrap svg rect {
+  fill: none !important;
+  stroke: rgba(16,17,20,0.55);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
