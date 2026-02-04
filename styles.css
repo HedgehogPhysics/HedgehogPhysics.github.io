@@ -240,8 +240,7 @@ body{
   height: 300px;
   object-fit: cover;
   border-radius: 12px;
-  cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: block;
 }
 
 .art-grid img:hover {
