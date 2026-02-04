@@ -138,6 +138,13 @@ body{
   background: rgba(42,109,245,.10);
 }
 
+.art-grid img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  display: block;
+}
+
 .scroll-hint{
   margin-top: 40px;
   display:flex;
