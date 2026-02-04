@@ -95,3 +95,37 @@ function step(){
   requestAnimationFrame(step);
 }
 step();
+function animateWireframe(svg, { duration = 1800, stagger = 6 } = {}) {
+  const els = svg.querySelectorAll("path, line, polyline, polygon, circle, rect");
+  let i = 0;
+
+  els.forEach((el) => {
+    // Some SVG elements don't implement getTotalLength; guard it
+    let len = 0;
+    try {
+      if (typeof el.getTotalLength === "function") len = el.getTotalLength();
+      else len = 120; // fallback for shapes; still looks fine
+    } catch {
+      len = 120;
+    }
+
+    el.style.strokeDasharray = `${len}`;
+    el.style.strokeDashoffset = `${len}`;
+    el.style.animation = `draw ${duration}ms ease forwards`;
+    el.style.animationDelay = `${i * stagger}ms`;
+    i++;
+  });
+}
+
+// Keyframes for the draw animation
+const style = document.createElement("style");
+style.textContent = `
+@keyframes draw { to { stroke-dashoffset: 0; } }
+`;
+document.head.appendChild(style);
+
+// Run once the page loads
+window.addEventListener("load", () => {
+  const svg = document.querySelector(".wireframe-wrap svg");
+  if (svg) animateWireframe(svg, { duration: 1600, stagger: 4 });
+});
