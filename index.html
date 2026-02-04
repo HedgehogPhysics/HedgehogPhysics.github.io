@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hedgehog Physics</title>
+  <meta name="description" content="Hedgehog Physics — simulations, art, and physics visuals." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Background canvas -->
+  <canvas id="bg" aria-hidden="true"></canvas>
+
+  <!-- Splash / Hero -->
+  <header class="hero" id="top">
+    <nav class="nav">
+      <a class="brand" href="#top">Hedgehog Physics</a>
+      <div class="nav-links">
+        <a href="#about">About</a>
+        <a href="#art">Artwork</a>
+      </div>
+    </nav>
+
+    <div class="hero-inner">
+      <div class="kicker">Physics • Visuals • Simulations</div>
+      <h1 class="title">
+        Hedgehog <span class="accent">Physics</span>
+      </h1>
+      <p class="subtitle">
+        A home for field lines, plasma vibes, and artwork — made with code.
+      </p>
+
+      <div class="cta-row">
+        <a class="btn primary" href="#about">Enter</a>
+        <a class="btn" href="#art">See artwork</a>
+      </div>
+
+      <div class="scroll-hint" aria-hidden="true">
+        <div class="mouse">
+          <div class="wheel"></div>
+        </div>
+        <div class="scroll-text">Scroll</div>
+      </div>
+    </div>
+
+    <!-- Soft blobs (CSS only) -->
+    <div class="blob b1" aria-hidden="true"></div>
+    <div class="blob b2" aria-hidden="true"></div>
+    <div class="blob b3" aria-hidden="true"></div>
+  </header>
+
+  <!-- Placeholder sections for later -->
+  <main class="content">
+    <section id="about" class="section">
+      <h2>About</h2>
+      <p>
+        Add your intro here (2–3 lines). You can expand this later with cards, links,
+        publications, YouTube, etc.
+      </p>
+    </section>
+
+    <section id="art" class="section">
+      <h2>Artwork</h2>
+      <p>
+        This will become a grid/gallery later. For now it’s just a placeholder so the nav works.
+      </p>
+      <div class="art-placeholder">
+        <div class="ph"></div><div class="ph"></div><div class="ph"></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>© <span id="year"></span> Hedgehog Physics</span>
+    </footer>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>
