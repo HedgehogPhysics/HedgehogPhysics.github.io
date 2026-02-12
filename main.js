@@ -34,12 +34,14 @@ for(let i=0;i<N;i++){
     k: Math.random()
   });
 }
-document.querySelectorAll(".art-item").forEach(item => {
-  item.addEventListener("click", () => {
-    document.querySelectorAll(".art-item.active")
-      .forEach(i => i !== item && i.classList.remove("active"));
-    item.classList.toggle("active");
-  });
+document.addEventListener("click", (e) => {
+  const item = e.target.closest(".art-item");
+  if (!item) return;
+
+  document.querySelectorAll(".art-item.active")
+    .forEach(i => i !== item && i.classList.remove("active"));
+
+  item.classList.toggle("active");
 });
 
 // Mouse / touch subtle parallax
