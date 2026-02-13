@@ -34,15 +34,6 @@ for(let i=0;i<N;i++){
     k: Math.random()
   });
 }
-document.addEventListener("click", (e) => {
-  const item = e.target.closest(".art-item");
-  if (!item) return;
-
-  document.querySelectorAll(".art-item.active")
-    .forEach(i => i !== item && i.classList.remove("active"));
-
-  item.classList.toggle("active");
-});
 
 // Mouse / touch subtle parallax
 let mx = w*0.5, my = h*0.35;
@@ -104,4 +95,47 @@ function step(){
   requestAnimationFrame(step);
 }
 step();
+const artFocus = document.getElementById("artFocus");
+const artClose = document.getElementById("artClose");
+const artFocusImg = document.getElementById("artFocusImg");
+const artFocusTitle = document.getElementById("artFocusTitle");
+const artFocusDesc = document.getElementById("artFocusDesc");
+
+function openArt(imgEl){
+  artFocusImg.src = imgEl.src;
+  artFocusImg.alt = imgEl.alt || "";
+  artFocusTitle.textContent = imgEl.dataset.title || imgEl.alt || "Artwork";
+  artFocusDesc.textContent = imgEl.dataset.desc || "";
+
+  artFocus.classList.add("is-open");
+  artFocus.setAttribute("aria-hidden", "false");
+  document.body.classList.add("art-dim");
+  document.body.style.overflow = "hidden";
+}
+
+function closeArt(){
+  artFocus.classList.remove("is-open");
+  artFocus.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("art-dim");
+  document.body.style.overflow = "";
+  artFocusImg.src = "";
+}
+
+document.addEventListener("click", (e) => {
+  const img = e.target.closest(".art-item img");
+  if (img) {
+    openArt(img);
+    return;
+  }
+
+  if (e.target === artFocus || e.target === artClose) {
+    closeArt();
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && artFocus.classList.contains("is-open")) {
+    closeArt();
+  }
+});
 
