@@ -314,5 +314,91 @@ body{
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.art-focus{
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  z-index: 9999;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(2px);
+}
 
+.art-focus.is-open{
+  display: flex;
+}
 
+.art-focus-inner{
+  position: relative;
+  width: min(1100px, 95vw);
+  max-height: 85vh;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.5rem;
+  align-items: center;
+  background: rgba(255,255,255,0.95);
+  border-radius: 16px;
+  padding: 1.25rem;
+  overflow: hidden;
+}
+
+/* Left image */
+.art-focus-media img{
+  width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
+  display: block;
+  border-radius: 12px;
+}
+
+/* Right panel */
+.art-focus-panel{
+  padding: 0.5rem 0.75rem;
+}
+
+.art-focus-panel h3{
+  margin: 0 0 0.6rem 0;
+  font-size: 1.25rem;
+}
+
+.art-focus-panel p{
+  margin: 0;
+  line-height: 1.45;
+  opacity: 0.9;
+}
+
+/* Close button */
+.art-close{
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: 0;
+  background: transparent;
+  font-size: 32px;
+  line-height: 32px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+.art-close:hover{ opacity: 1; }
+
+/* Mobile: stack panel underneath */
+@media (max-width: 850px){
+  .art-focus-inner{
+    grid-template-columns: 1fr;
+    max-height: 90vh;
+  }
+  .art-focus-media img{
+    max-height: 55vh;
+  }
+}
+body.art-dim .art-grid{
+  filter: grayscale(0.1);
+  opacity: 0.25;
+  transition: opacity 0.25s ease;
+}
+
+body.art-dim .art-grid img{
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+}
