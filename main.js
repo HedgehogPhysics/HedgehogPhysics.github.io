@@ -96,18 +96,6 @@ function step(){
 }
 step();
 
-function openArt(imgEl){
-  artFocusImg.src = imgEl.src;
-  artFocusImg.alt = imgEl.alt || "";
-  artFocusTitle.textContent = imgEl.dataset.title || imgEl.alt || "Artwork";
-  artFocusDesc.textContent = imgEl.dataset.desc || "";
-
-  artFocus.classList.add("is-open");
-  artFocus.setAttribute("aria-hidden", "false");
-  document.body.classList.add("art-dim");
-  document.body.style.overflow = "hidden";
-}
-
 const spotlight = document.getElementById("artSpotlight");
 const spotlightBackdrop = spotlight.querySelector(".art-spotlight-backdrop");
 const spotlightStage = spotlight.querySelector(".art-spotlight-stage");
