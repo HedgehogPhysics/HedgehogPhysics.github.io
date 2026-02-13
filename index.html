@@ -64,38 +64,69 @@
       <p>
         Some of the drawings I've done, a fair few of these have come from helpful draw-alongs/tutorials from pencil-maestro on YouTube and various other sources.
       </p>
+      
       <div class="art-grid">
+      
         <div class="art-item">
-          <img src="art/IMG_0807.JPG" alt="Graphite landscape">
-          <p class="art-desc">
-            Graphite landscape study focusing on atmospheric depth and tonal compression.
-          </p>
+          <img src="art/IMG_0807.JPG"
+               alt="Graphite landscape"
+               data-title="Graphite landscape"
+               data-desc="Graphite landscape study focusing on atmospheric depth and tonal compression.">
+          <p class="art-desc">Graphite landscape study focusing on atmospheric depth and tonal compression.</p>
         </div>
+      
         <div class="art-item">
-          <img src="art/IMG_0818.JPG" alt="Portrait study">
-          <p class="art-desc">
-            Portrait study exploring facial planes and soft edge transitions.
-          </p>
+          <img src="art/IMG_0818.JPG"
+               alt="Portrait study"
+               data-title="Portrait study"
+               data-desc="Portrait study exploring facial planes and soft edge transitions.">
+          <p class="art-desc">Portrait study exploring facial planes and soft edge transitions.</p>
         </div>
-        
-        <img src="art/IMG_1040.JPG" alt="Artwork 3">
-        <img src="art/IMG_3233.JPG" alt="Artwork 4">
-        <img src="art/IMG_3440.JPEG" alt="Artwork 5">
-        <img src="art/IMG_3655.JPG" alt="Artwork 6">
-      </div>
-
-      <div class="art-focus" id="artFocus" aria-hidden="true">
-        <div class="art-focus-inner">
-          <button class="art-close" id="artClose" aria-label="Close">×</button>
-
-          <div class="art-focus-media">
-            <img id="artFocusImg" alt="">
-          </div>
-
-          <div class="art-focus-panel">
-            <h3 id="artFocusTitle"></h3>
-            <p id="artFocusDesc"></p>
+      
+        <div class="art-item">
+          <img src="art/IMG_1040.JPG"
+               alt="Artwork 3"
+               data-title="Artwork 3"
+               data-desc="Add your description here.">
+          <p class="art-desc">Add your description here.</p>
         </div>
+      
+        <div class="art-item">
+          <img src="art/IMG_3233.JPG"
+               alt="Artwork 4"
+               data-title="Artwork 4"
+               data-desc="Add your description here.">
+          <p class="art-desc">Add your description here.</p>
+        </div>
+      
+        <div class="art-item">
+          <img src="art/IMG_3440.JPEG"
+               alt="Artwork 5"
+               data-title="Artwork 5"
+               data-desc="Add your description here.">
+          <p class="art-desc">Add your description here.</p>
+        </div>
+      
+        <div class="art-item">
+          <img src="art/IMG_3655.JPG"
+               alt="Artwork 6"
+               data-title="Artwork 6"
+               data-desc="Add your description here.">
+          <p class="art-desc">Add your description here.</p>
+        </div>
+    
+    </div>
+
+      <div id="artSpotlight" class="art-spotlight" aria-hidden="true">
+      <div class="art-spotlight-backdrop"></div>
+    
+      <div class="art-spotlight-stage" role="dialog" aria-label="Artwork spotlight">
+        <img id="artSpotlightImg" class="art-spotlight-img" alt="">
+        <div class="art-spotlight-panel">
+          <h3 id="artSpotlightTitle"></h3>
+          <p id="artSpotlightDesc"></p>
+        </div>
+        <button id="artSpotlightClose" class="art-spotlight-close" aria-label="Close">×</button>
       </div>
     </div>
     </section>
