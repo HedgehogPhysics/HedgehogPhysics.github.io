@@ -121,17 +121,21 @@ function getTargetRect(){
   let imgW, imgH, imgLeft, imgTop;
 
   if (!isMobile){
-    const panelW = Math.min(360, stageRect.width * 0.42);
-    const gap = 24;
+  const panelW = Math.min(360, stageRect.width * 0.42);
+  const gap = 24;
 
-    imgW = stageRect.width - panelW - gap;
-    imgH = stageRect.height;
+  // Give image some breathing room so the whole (image+panel) can be centered
+  const availW = stageRect.width - panelW - gap;
+  imgW = Math.min(availW, stageRect.width * 0.62);   // <- key change
+  imgH = stageRect.height*0.86;
 
-    // Center the image inside the left available area
-    imgLeft = stageRect.left + (stageRect.width - panelW - gap - imgW) / 2;
-    imgTop = stageRect.top + (stageRect.height - imgH) / 2;
+  // Center the combined block (img + gap + panel) within the stage
+  const blockW = imgW + gap + panelW;
+  const blockLeft = stageRect.left + (stageRect.width - blockW) / 2;
 
-  } else {
+  imgLeft = blockLeft;                // image starts at block left
+  imgTop  = stageRect.top + (stageRect.height - imgH) / 2;           // full height already
+} else {
     imgW = stageRect.width * 0.92;
     imgH = stageRect.height * 0.6;
 
