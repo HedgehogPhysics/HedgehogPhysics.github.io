@@ -68,12 +68,20 @@ body{
   color: var(--ink);
 }
 
+/* ── Hero inner: two-column layout ── */
 .hero-inner{
   max-width: 1060px;
   width: 100%;
   margin: 0 auto;
   padding: 62px 8px 0;
-  display:grid;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 32px;
+}
+
+.hero-text{
+  display: grid;
   gap: 18px;
 }
 
@@ -138,7 +146,6 @@ body{
   background: rgba(42,109,245,.10);
 }
 
-
 .scroll-hint{
   margin-top: 40px;
   display:flex;
@@ -167,6 +174,39 @@ body{
   0%{ transform: translateY(0); opacity: .9; }
   70%{ transform: translateY(10px); opacity: .25; }
   100%{ transform: translateY(0); opacity: .9; }
+}
+
+/* ── Hero SVG column ── */
+.hero-svg{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 20px;
+}
+
+#hedgehog-svg{
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+/* Wireframe path style */
+#hedgehog-svg .draw-path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.7;
+  /* dasharray/dashoffset set by JS */
+}
+
+/* Subtle glow on the stroke after it draws in */
+#hedgehog-svg .draw-path {
+  filter: drop-shadow(0 0 6px rgba(42, 109, 245, 0.18));
 }
 
 /* Soft blobs */
@@ -200,6 +240,23 @@ body{
 @keyframes float1{ 0%,100%{ transform: translate(0,0);} 50%{ transform: translate(30px,-18px);} }
 @keyframes float2{ 0%,100%{ transform: translate(0,0);} 50%{ transform: translate(-26px,18px);} }
 @keyframes float3{ 0%,100%{ transform: translate(0,0);} 50%{ transform: translate(18px,22px);} }
+
+/* ── Responsive: stack on mobile ── */
+@media (max-width: 720px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-svg {
+    order: -1; /* SVG above text on mobile, or remove this line to put it below */
+    padding-top: 0;
+  }
+
+  #hedgehog-svg {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}
 
 .content{
   max-width: 1060px;
@@ -264,28 +321,12 @@ body{
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior: auto; }
   .wheel, .blob{ animation: none !important; }
-}
-.wireframe-wrap svg{
-  width: min(900px, 92vw);
-  height: auto;
-  display: block;
-  margin: 30px 0 0;
+  #hedgehog-svg .draw-path {
+    stroke-dashoffset: 0 !important;
+    transition: none !important;
+  }
 }
 
-/* Make it wireframe-like */
-.wireframe-wrap svg path,
-.wireframe-wrap svg line,
-.wireframe-wrap svg polyline,
-.wireframe-wrap svg polygon,
-.wireframe-wrap svg circle,
-.wireframe-wrap svg rect {
-  fill: none !important;
-  stroke: rgba(16,17,20,0.55);
-  stroke-width: 1.25;
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
 body.art-spotlight-open .art-grid{
   opacity: 0.18;
   filter: grayscale(0.15);
@@ -416,4 +457,3 @@ body.art-spotlight-open .art-grid .art-item{
     transform: translateY(0);
   }
 }
-
