@@ -118,21 +118,24 @@ function getTargetRect(){
   const stageRect = spotlightStage.getBoundingClientRect();
   const isMobile = window.matchMedia("(max-width: 900px)").matches;
 
-  let imgLeft = stageRect.left;
-  let imgTop = stageRect.top;
-  let imgW = stageRect.width;
-  let imgH = stageRect.height;
+  let imgW, imgH, imgLeft, imgTop;
 
   if (!isMobile){
     const panelW = Math.min(360, stageRect.width * 0.42);
-    const gap = 18;
+    const gap = 24;
+
     imgW = stageRect.width - panelW - gap;
     imgH = stageRect.height;
-    imgLeft = stageRect.left;
-    imgTop = stageRect.top;
+
+    // Center the image inside the left available area
+    imgLeft = stageRect.left + (stageRect.width - panelW - gap - imgW) / 2;
+    imgTop = stageRect.top + (stageRect.height - imgH) / 2;
+
   } else {
-    // leave space for bottom panel
-    imgH = stageRect.height * 0.62;
+    imgW = stageRect.width * 0.92;
+    imgH = stageRect.height * 0.6;
+
+    imgLeft = stageRect.left + (stageRect.width - imgW) / 2;
     imgTop = stageRect.top + stageRect.height * 0.05;
   }
 
