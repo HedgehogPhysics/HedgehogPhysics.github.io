@@ -95,11 +95,6 @@ function step(){
   requestAnimationFrame(step);
 }
 step();
-const artFocus = document.getElementById("artFocus");
-const artClose = document.getElementById("artClose");
-const artFocusImg = document.getElementById("artFocusImg");
-const artFocusTitle = document.getElementById("artFocusTitle");
-const artFocusDesc = document.getElementById("artFocusDesc");
 
 function openArt(imgEl){
   artFocusImg.src = imgEl.src;
@@ -113,29 +108,124 @@ function openArt(imgEl){
   document.body.style.overflow = "hidden";
 }
 
-function closeArt(){
-  artFocus.classList.remove("is-open");
-  artFocus.setAttribute("aria-hidden", "true");
-  document.body.classList.remove("art-dim");
-  document.body.style.overflow = "";
-  artFocusImg.src = "";
+const spotlight = document.getElementById("artSpotlight");
+const spotlightBackdrop = spotlight.querySelector(".art-spotlight-backdrop");
+const spotlightStage = spotlight.querySelector(".art-spotlight-stage");
+const spotlightImg = document.getElementById("artSpotlightImg");
+const spotlightTitle = document.getElementById("artSpotlightTitle");
+const spotlightDesc = document.getElementById("artSpotlightDesc");
+const spotlightClose = document.getElementById("artSpotlightClose");
+const spotlightPanel = spotlight.querySelector(".art-spotlight-panel");
+
+let lastThumbRect = null;
+
+function setImgRect(rect){
+  spotlightImg.style.left = rect.left + "px";
+  spotlightImg.style.top = rect.top + "px";
+  spotlightImg.style.width = rect.width + "px";
+  spotlightImg.style.height = rect.height + "px";
 }
 
+function getTargetRect(){
+  const stageRect = spotlightStage.getBoundingClientRect();
+  const isMobile = window.matchMedia("(max-width: 900px)").matches;
+
+  let imgLeft = stageRect.left;
+  let imgTop = stageRect.top;
+  let imgW = stageRect.width;
+  let imgH = stageRect.height;
+
+  if (!isMobile){
+    const panelW = Math.min(360, stageRect.width * 0.42);
+    const gap = 18;
+    imgW = stageRect.width - panelW - gap;
+    imgH = stageRect.height;
+    imgLeft = stageRect.left;
+    imgTop = stageRect.top;
+  } else {
+    // leave space for bottom panel
+    imgH = stageRect.height * 0.62;
+    imgTop = stageRect.top + stageRect.height * 0.05;
+  }
+
+  return { left: imgLeft, top: imgTop, width: imgW, height: imgH };
+}
+
+function openSpotlight(fromImg){
+  spotlightImg.src = fromImg.src;
+  spotlightImg.alt = fromImg.alt || "";
+  spotlightTitle.textContent = fromImg.dataset.title || fromImg.alt || "Artwork";
+  spotlightDesc.textContent = fromImg.dataset.desc || "";
+
+  spotlight.classList.add("is-open");
+  spotlight.setAttribute("aria-hidden", "false");
+  document.body.classList.add("art-spotlight-open");
+  document.body.style.overflow = "hidden";
+
+  // Start panel hidden; fade it in after image starts moving
+  spotlightPanel.classList.remove("is-visible");
+
+  // Start at thumbnail rect
+  const r = fromImg.getBoundingClientRect();
+  lastThumbRect = r;
+  setImgRect({ left: r.left, top: r.top, width: r.width, height: r.height });
+
+  // Force layout so transitions kick in
+  spotlightImg.getBoundingClientRect();
+
+  // Animate to target
+  const t = getTargetRect();
+  requestAnimationFrame(() => {
+    setImgRect(t);
+  });
+
+  // Fade in panel
+  setTimeout(() => {
+    spotlightPanel.classList.add("is-visible");
+  }, 180);
+}
+
+function closeSpotlight(){
+  spotlightPanel.classList.remove("is-visible");
+
+  if (lastThumbRect){
+    setImgRect({ left: lastThumbRect.left, top: lastThumbRect.top, width: lastThumbRect.width, height: lastThumbRect.height });
+  }
+
+  setTimeout(() => {
+    spotlight.classList.remove("is-open");
+    spotlight.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("art-spotlight-open");
+    document.body.style.overflow = "";
+    spotlightImg.src = "";
+    lastThumbRect = null;
+  }, 430);
+}
+
+// Click handlers
 document.addEventListener("click", (e) => {
   const img = e.target.closest(".art-item img");
   if (img) {
-    openArt(img);
+    openSpotlight(img);
     return;
   }
 
-  if (e.target === artFocus || e.target === artClose) {
-    closeArt();
+  if (e.target === spotlightBackdrop || e.target === spotlightClose) {
+    closeSpotlight();
   }
 });
 
+// ESC closes
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && artFocus.classList.contains("is-open")) {
-    closeArt();
+  if (e.key === "Escape" && spotlight.classList.contains("is-open")) {
+    closeSpotlight();
   }
+});
+
+// Resize while open: keep spotlight aligned
+window.addEventListener("resize", () => {
+  if (!spotlight.classList.contains("is-open")) return;
+  const t = getTargetRect();
+  setImgRect(t);
 });
 
