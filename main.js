@@ -144,23 +144,22 @@ function getTargetRect(){
   return { left: imgLeft, top: imgTop, width: imgW, height: imgH };
 }
 
-// Get the full-screen centred rect (no panel offset)
+// Get the full-screen centred rect (no panel offset) — uses viewport for true centering
 function getFullRect(){
-  const stageRect = spotlightStage.getBoundingClientRect();
   const isMobile = window.matchMedia("(max-width: 900px)").matches;
 
   let imgW, imgH, imgLeft, imgTop;
 
   if (!isMobile){
-    imgW = stageRect.width * 0.80;
-    imgH = stageRect.height * 0.90;
-    imgLeft = stageRect.left + (stageRect.width - imgW) / 2;
-    imgTop  = stageRect.top  + (stageRect.height - imgH) / 2;
+    imgW = Math.min(window.innerWidth * 0.72, window.innerHeight * 0.88);
+    imgH = window.innerHeight * 0.88;
+    imgLeft = (window.innerWidth - imgW) / 2;
+    imgTop  = (window.innerHeight - imgH) / 2;
   } else {
-    imgW = stageRect.width * 0.92;
-    imgH = stageRect.height * 0.75;
-    imgLeft = stageRect.left + (stageRect.width - imgW) / 2;
-    imgTop  = stageRect.top  + (stageRect.height - imgH) / 2;
+    imgW = window.innerWidth * 0.92;
+    imgH = window.innerHeight * 0.75;
+    imgLeft = (window.innerWidth - imgW) / 2;
+    imgTop  = (window.innerHeight - imgH) / 2;
   }
 
   return { left: imgLeft, top: imgTop, width: imgW, height: imgH };
