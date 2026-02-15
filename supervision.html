@@ -67,7 +67,7 @@
       padding: 6px 12px;
       border-radius: 999px;
       border: 1px solid var(--line);
-      background: rgba(255,255,255,0.6);
+      background: var(--card-bg);
       backdrop-filter: blur(8px);
       font-size: 13px;
       color: var(--muted);
@@ -172,7 +172,7 @@
       padding: 14px 18px;
       border-radius: var(--radius);
       border: 1px solid var(--line);
-      background: rgba(255,255,255,0.65);
+      background: var(--card-bg);
       backdrop-filter: blur(8px);
       text-decoration: none;
       color: var(--ink);
@@ -227,7 +227,7 @@
       padding: 7px 13px;
       border-radius: 10px;
       border: 1px solid var(--line);
-      background: rgba(255,255,255,0.8);
+      background: var(--card-bg);
       font-size: 13px;
       font-weight: 700;
       color: var(--ink);
@@ -300,6 +300,55 @@
     .back-link:hover { color: var(--ink); }
     .back-link svg { transition: transform 0.15s; }
     .back-link:hover svg { transform: translateX(-3px); }
+
+    /* Dark mode overrides for supervision-specific elements */
+    @media (prefers-color-scheme: dark) {
+      .supervision-hero::before {
+        background:
+          radial-gradient(ellipse 60% 50% at 80% 20%, rgba(42,109,245,0.12) 0%, transparent 70%),
+          radial-gradient(ellipse 40% 60% at 10% 80%, rgba(124,58,237,0.10) 0%, transparent 70%);
+      }
+
+      .meta-tag {
+        background: rgba(255,255,255,0.06);
+      }
+
+      .cat-tab {
+        background: transparent;
+        color: var(--muted);
+      }
+
+      .cat-tab:hover {
+        background: rgba(238,238,240,0.07);
+        color: var(--ink);
+      }
+
+      .cat-tab.active {
+        background: var(--ink);
+        color: #0e0f11;
+      }
+
+      .file-card {
+        background: rgba(255,255,255,0.05);
+      }
+
+      .file-card:hover {
+        background: rgba(255,255,255,0.08);
+      }
+
+      .file-download {
+        background: rgba(255,255,255,0.08);
+      }
+
+      .file-icon {
+        background: rgba(42,109,245,0.15);
+      }
+
+      .notice {
+        background: rgba(42,109,245,0.08);
+        border-color: rgba(42,109,245,0.25);
+      }
+    }
   </style>
 </head>
 <body>
