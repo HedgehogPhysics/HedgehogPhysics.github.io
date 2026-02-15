@@ -363,7 +363,7 @@
         Back to home
       </a>
       <h1>Chess Progress</h1>
-      <p>Live blitz rating history pulled from Lichess and Chess.com.</p>
+      <p>Live blitz rating history pulled from Lichess, Chess.com and FIDE.</p>
       <div class="chess-meta">
         <span class="meta-tag"><span class="dot" style="background:#2a6df5"></span>Lichess · BigSoonj</span>
         <span class="meta-tag"><span class="dot" style="background:#81b64c"></span>Chess.com · Hog_Hedge</span>
@@ -393,8 +393,8 @@
       <div class="rating-card fide">
         <div class="rating-card-platform">FIDE</div>
         <div class="rating-card-value" id="fide-current">—</div>
-        <div class="rating-card-label">Standard rating</div>
-        <div class="rating-card-change neutral" id="fide-change">Updated each period</div>
+        <div class="rating-card-label">Blitz rating</div>
+        <div class="rating-card-change neutral" id="fide-change">Loading…</div>
       </div>
     </div>
 
@@ -460,7 +460,7 @@
       <div class="chart-header">
         <div class="chart-title">
           <h2>FIDE</h2>
-          <span class="platform-badge badge-fide">Standard</span>
+          <span class="platform-badge badge-fide">Blitz</span>
         </div>
         <a class="chart-link" href="https://ratings.fide.com/profile/343482139" target="_blank" rel="noopener">View profile ↗</a>
       </div>
@@ -490,15 +490,12 @@
 document.getElementById('year').textContent = new Date().getFullYear();
 
 // ═══════════════════════════════════════════════════════
-//  FIDE DATA — update this manually each rating period
+//  FIDE FALLBACK DATA — used if the API is unavailable
+//  Update with your real rating history if needed.
 //  Format: { date: 'YYYY-MM', rating: NUMBER }
 // ═══════════════════════════════════════════════════════
 const FIDE_DATA = [
-  { date: '2024-01', rating: 1200 },
-  { date: '2024-04', rating: 1220 },
-  { date: '2024-07', rating: 1195 },
-  { date: '2024-10', rating: 1250 },
-  { date: '2025-01', rating: 1280 },
+  { date: '2025-01', rating: 1200 }, // ← replace with your real historical data
 ];
 // ═══════════════════════════════════════════════════════
 
@@ -762,21 +759,65 @@ async function loadChessCom() {
 }
 
 // ══════════════════════════════════
-//  FIDE — manual data
+//  FIDE — live via ChessTools API
+//  Falls back to FIDE_DATA if API fails
 // ══════════════════════════════════
-function loadFide() {
-  if (!FIDE_DATA.length) return;
-  const labels = FIDE_DATA.map(d => d.date);
-  const values = FIDE_DATA.map(d => d.rating);
-  const current = values[values.length - 1];
+async function loadFide() {
+  try {
+    // Try ChessTools free FIDE API (CORS-enabled)
+    const res = await fetch('https://api.chesstools.org/fide/player/343482139');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
 
-  document.getElementById('fide-current').textContent = current;
-  const diff = current - values[0];
-  const changeEl = document.getElementById('fide-change');
-  changeEl.textContent = (diff >= 0 ? '+' : '') + diff + ' overall';
-  changeEl.className = 'rating-card-change ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral');
+    // Current rating — blitz first
+    const current = data.blitz_elo || data.rapid_elo || data.standard_elo;
+    if (!current) throw new Error('No rating in response');
 
-  drawChart('fide-canvas', labels, values, COLORS.fide);
+    document.getElementById('fide-current').textContent = current;
+
+    // Build history from API if available, else use manual data as graph
+    let labels, values;
+    if (data.rating_history && data.rating_history.length > 1) {
+      const history = [...data.rating_history].reverse(); // oldest first
+      labels = history.map(h => h.date);
+      values = history.map(h => parseInt(h.blitz) || parseInt(h.rapid) || parseInt(h.standard));
+    } else if (FIDE_DATA.length > 1) {
+      // Use manual data for graph shape but override current with live value
+      labels = FIDE_DATA.map(d => d.date);
+      values = FIDE_DATA.map(d => d.rating);
+      values[values.length - 1] = current;
+    } else {
+      labels = ['Now'];
+      values = [current];
+    }
+
+    const diff = current - values[0];
+    const changeEl = document.getElementById('fide-change');
+    changeEl.textContent = (diff >= 0 ? '+' : '') + diff + ' overall';
+    changeEl.className = 'rating-card-change ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral');
+
+    // Update notice to show it's live
+    const notice = document.querySelector('.fide-notice');
+    if (notice) notice.innerHTML = '<strong>Live data</strong> from the FIDE rating database via ChessTools API. Updates each rating period automatically.';
+
+    if (values.length >= 2) drawChart('fide-canvas', labels, values, COLORS.fide);
+
+  } catch (e) {
+    console.warn('ChessTools API failed, using manual FIDE data:', e);
+    // Fall back to manual data
+    if (!FIDE_DATA.length) return;
+    const labels = FIDE_DATA.map(d => d.date);
+    const values = FIDE_DATA.map(d => d.rating);
+    const current = values[values.length - 1];
+
+    document.getElementById('fide-current').textContent = current;
+    const diff = current - values[0];
+    const changeEl = document.getElementById('fide-change');
+    changeEl.textContent = (diff >= 0 ? '+' : '') + diff + ' overall';
+    changeEl.className = 'rating-card-change ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral');
+
+    drawChart('fide-canvas', labels, values, COLORS.fide);
+  }
 }
 
 // ── Kick everything off ──
