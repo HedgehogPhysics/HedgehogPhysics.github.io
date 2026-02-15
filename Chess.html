@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chess Progress — Hedgehog Physics</title>
+  <meta name="description" content="Blitz rating progress across Lichess, Chess.com and FIDE." />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ── Chess page specific styles ── */
+
+    .chess-hero {
+      position: relative;
+      padding: 120px 18px 60px;
+      overflow: hidden;
+    }
+
+    .chess-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 50% 60% at 90% 10%, rgba(42,109,245,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 50% at 5% 90%, rgba(124,58,237,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .chess-hero-inner {
+      max-width: 1060px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .chess-hero h1 {
+      margin: 16px 0 12px;
+      font-size: clamp(36px, 5vw, 62px);
+      letter-spacing: -1px;
+      line-height: 1.05;
+    }
+
+    .chess-hero p {
+      margin: 0;
+      max-width: 58ch;
+      font-size: clamp(15px, 1.8vw, 18px);
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .chess-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .chess-meta .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .chess-meta .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Main content ── */
+    .chess-content {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 18px 80px;
+    }
+
+    /* ── Rating summary cards ── */
+    .rating-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 48px;
+    }
+
+    .rating-card {
+      padding: 20px 22px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rating-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 3px 3px 0 0;
+    }
+
+    .rating-card.lichess::before { background: #2a6df5; }
+    .rating-card.chesscom::before { background: #81b64c; }
+    .rating-card.fide::before { background: #f5a623; }
+
+    .rating-card-platform {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .rating-card-value {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .rating-card.lichess .rating-card-value { color: #2a6df5; }
+    .rating-card.chesscom .rating-card-value { color: #81b64c; }
+    .rating-card.fide .rating-card-value { color: #f5a623; }
+
+    .rating-card-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .rating-card-change {
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .rating-card-change.up { color: #22c55e; }
+    .rating-card-change.down { color: #ef4444; }
+    .rating-card-change.neutral { color: var(--muted); }
+
+    /* ── Chart sections ── */
+    .chart-section {
+      border-top: 1px solid var(--line);
+      padding-top: 36px;
+      margin-top: 36px;
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .chart-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chart-title h2 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -.3px;
+    }
+
+    .platform-badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .3px;
+    }
+
+    .badge-lichess { background: rgba(42,109,245,0.12); color: #2a6df5; }
+    .badge-chesscom { background: rgba(129,182,76,0.15); color: #5a9432; }
+    .badge-fide { background: rgba(245,166,35,0.15); color: #c07a10; }
+
+    @media (prefers-color-scheme: dark) {
+      .badge-chesscom { color: #81b64c; }
+      .badge-fide { color: #f5a623; }
+    }
+
+    .chart-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--card-bg);
+      transition: color .15s, border-color .15s;
+    }
+    .chart-link:hover { color: var(--ink); border-color: rgba(42,109,245,.3); }
+
+    /* ── Canvas chart wrapper ── */
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+      height: 280px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+    }
+
+    .chart-wrap canvas {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ── Loading / error states ── */
+    .chart-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .spinner {
+      width: 28px; height: 28px;
+      border: 2px solid var(--line);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .chart-error {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+      padding: 20px;
+    }
+
+    /* ── Annotations ── */
+    .annotations {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .annotation {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--card-bg);
+      font-size: 13px;
+    }
+
+    .annotation-date {
+      font-weight: 700;
+      color: var(--muted);
+      white-space: nowrap;
+      min-width: 70px;
+      font-size: 12px;
+      padding-top: 1px;
+    }
+
+    .annotation-text {
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    .annotation-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    /* ── FIDE manual entry notice ── */
+    .fide-notice {
+      margin-top: 14px;
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(245,166,35,0.25);
+      background: rgba(245,166,35,0.06);
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .fide-notice strong { color: var(--ink); }
+
+    /* back link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+      transition: color .15s;
+    }
+    .back-link:hover { color: var(--ink); }
+    .back-link svg { transition: transform .15s; }
+    .back-link:hover svg { transform: translateX(-3px); }
+
+    @media (prefers-color-scheme: dark) {
+      .chess-hero::before {
+        background:
+          radial-gradient(ellipse 50% 60% at 90% 10%, rgba(42,109,245,0.13) 0%, transparent 70%),
+          radial-gradient(ellipse 40% 50% at 5% 90%, rgba(124,58,237,0.10) 0%, transparent 70%);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <header class="hero" style="min-height:unset; padding-bottom:0;">
+    <nav class="nav">
+      <a class="brand" href="index.html">Hedgehog Physics</a>
+      <div class="nav-links">
+        <a href="index.html#about">About</a>
+        <a href="index.html#art">Artwork</a>
+        <a href="supervision.html">Supervisions</a>
+        <a href="chess.html" style="color:var(--ink);">Chess</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="chess-hero">
+    <div class="chess-hero-inner">
+      <a class="back-link" href="index.html">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to home
+      </a>
+      <h1>Chess Progress</h1>
+      <p>Live blitz rating history pulled from Lichess and Chess.com. FIDE rating updated each rating period.</p>
+      <div class="chess-meta">
+        <span class="meta-tag"><span class="dot" style="background:#2a6df5"></span>Lichess · BigSoonj</span>
+        <span class="meta-tag"><span class="dot" style="background:#81b64c"></span>Chess.com · Hog_Hedge</span>
+        <span class="meta-tag"><span class="dot" style="background:#f5a623"></span>FIDE · 343482139</span>
+        <span class="meta-tag"><span class="dot" style="background:var(--accent2)"></span>Blitz only</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <main class="chess-content">
+
+    <!-- Summary cards -->
+    <div class="rating-cards">
+      <div class="rating-card lichess">
+        <div class="rating-card-platform">Lichess</div>
+        <div class="rating-card-value" id="lichess-current">—</div>
+        <div class="rating-card-label">Blitz rating</div>
+        <div class="rating-card-change neutral" id="lichess-change">Loading…</div>
+      </div>
+      <div class="rating-card chesscom">
+        <div class="rating-card-platform">Chess.com</div>
+        <div class="rating-card-value" id="chesscom-current">—</div>
+        <div class="rating-card-label">Blitz rating</div>
+        <div class="rating-card-change neutral" id="chesscom-change">Loading…</div>
+      </div>
+      <div class="rating-card fide">
+        <div class="rating-card-platform">FIDE</div>
+        <div class="rating-card-value" id="fide-current">—</div>
+        <div class="rating-card-label">Standard rating</div>
+        <div class="rating-card-change neutral" id="fide-change">Updated each period</div>
+      </div>
+    </div>
+
+    <!-- ── Lichess chart ── -->
+    <div class="chart-section">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h2>Lichess</h2>
+          <span class="platform-badge badge-lichess">Blitz</span>
+        </div>
+        <a class="chart-link" href="https://lichess.org/@/BigSoonj" target="_blank" rel="noopener">View profile ↗</a>
+      </div>
+      <div class="chart-wrap" id="lichess-wrap">
+        <div class="chart-loading" id="lichess-loading">
+          <div class="spinner"></div>
+          <span>Fetching from Lichess…</span>
+        </div>
+        <div class="chart-error" id="lichess-error">
+          ⚠️ Could not load Lichess data.<br>Check your connection or try refreshing.
+        </div>
+        <canvas id="lichess-canvas"></canvas>
+      </div>
+      <div class="annotations" id="lichess-annotations">
+        <!-- Add your own annotations below — duplicate the .annotation block -->
+        <div class="annotation">
+          <span class="annotation-dot" style="background:#2a6df5"></span>
+          <span class="annotation-date">Add date</span>
+          <span class="annotation-text">Add a note about a milestone, tournament, or improvement here.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Chess.com chart ── -->
+    <div class="chart-section">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h2>Chess.com</h2>
+          <span class="platform-badge badge-chesscom">Blitz</span>
+        </div>
+        <a class="chart-link" href="https://www.chess.com/member/Hog_Hedge" target="_blank" rel="noopener">View profile ↗</a>
+      </div>
+      <div class="chart-wrap" id="chesscom-wrap">
+        <div class="chart-loading" id="chesscom-loading">
+          <div class="spinner"></div>
+          <span>Fetching from Chess.com…</span>
+        </div>
+        <div class="chart-error" id="chesscom-error">
+          ⚠️ Could not load Chess.com data.<br>Chess.com's API may require a CORS proxy — see note below.
+        </div>
+        <canvas id="chesscom-canvas"></canvas>
+      </div>
+      <div class="annotations" id="chesscom-annotations">
+        <div class="annotation">
+          <span class="annotation-dot" style="background:#81b64c"></span>
+          <span class="annotation-date">Add date</span>
+          <span class="annotation-text">Add a note about a milestone, tournament, or improvement here.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FIDE chart ── -->
+    <div class="chart-section">
+      <div class="chart-header">
+        <div class="chart-title">
+          <h2>FIDE</h2>
+          <span class="platform-badge badge-fide">Standard</span>
+        </div>
+        <a class="chart-link" href="https://ratings.fide.com/profile/343482139" target="_blank" rel="noopener">View profile ↗</a>
+      </div>
+      <div class="chart-wrap" id="fide-wrap">
+        <canvas id="fide-canvas"></canvas>
+      </div>
+      <div class="fide-notice">
+        <strong>Note:</strong> FIDE doesn't provide a public API, so this chart uses manually entered rating history.
+        Update the <code>FIDE_DATA</code> array in <code>chess.html</code> each rating period to keep it current.
+      </div>
+      <div class="annotations" id="fide-annotations">
+        <div class="annotation">
+          <span class="annotation-dot" style="background:#f5a623"></span>
+          <span class="annotation-date">Add date</span>
+          <span class="annotation-text">Add a note about a tournament result or rating change here.</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="footer" style="max-width:1060px;margin:0 auto;padding:0 18px 40px;">
+    <span>© <span id="year"></span> Hedgehog Physics</span>
+  </footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// ═══════════════════════════════════════════════════════
+//  FIDE DATA — update this manually each rating period
+//  Format: { date: 'YYYY-MM', rating: NUMBER }
+// ═══════════════════════════════════════════════════════
+const FIDE_DATA = [
+  { date: '2024-01', rating: 1200 },
+  { date: '2024-04', rating: 1220 },
+  { date: '2024-07', rating: 1195 },
+  { date: '2024-10', rating: 1250 },
+  { date: '2025-01', rating: 1280 },
+];
+// ═══════════════════════════════════════════════════════
+
+// ── Detect dark mode ──
+const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const COLORS = {
+  lichess:  '#2a6df5',
+  chesscom: '#81b64c',
+  fide:     '#f5a623',
+  grid:     isDark ? 'rgba(238,238,240,0.07)' : 'rgba(16,17,20,0.07)',
+  label:    isDark ? 'rgba(238,238,240,0.45)' : 'rgba(16,17,20,0.45)',
+  text:     isDark ? '#eeeef0' : '#101114',
+};
+
+// ── Generic animated line chart ──
+function drawChart(canvasId, labels, values, color, animated = true) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  function render() {
+    const W = canvas.parentElement.clientWidth;
+    const H = canvas.parentElement.clientHeight;
+    canvas.width  = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const PAD = { top: 24, right: 24, bottom: 44, left: 56 };
+    const cW = W - PAD.left - PAD.right;
+    const cH = H - PAD.top  - PAD.bottom;
+
+    const minV = Math.min(...values);
+    const maxV = Math.max(...values);
+    const range = maxV - minV || 1;
+    const pad = range * 0.15;
+    const lo = minV - pad;
+    const hi = maxV + pad;
+
+    const xOf = i => PAD.left + (i / (values.length - 1)) * cW;
+    const yOf = v => PAD.top  + (1 - (v - lo) / (hi - lo)) * cH;
+
+    // Grid lines
+    const steps = 5;
+    ctx.strokeStyle = COLORS.grid;
+    ctx.lineWidth = 1;
+    for (let s = 0; s <= steps; s++) {
+      const v = lo + (hi - lo) * (s / steps);
+      const y = yOf(v);
+      ctx.beginPath();
+      ctx.moveTo(PAD.left, y);
+      ctx.lineTo(PAD.left + cW, y);
+      ctx.stroke();
+
+      ctx.fillStyle = COLORS.label;
+      ctx.font = '11px ui-sans-serif, system-ui, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(Math.round(v), PAD.left - 8, y + 4);
+    }
+
+    // X axis labels (show ~6 evenly spaced)
+    const step = Math.max(1, Math.floor(labels.length / 6));
+    ctx.fillStyle = COLORS.label;
+    ctx.font = '11px ui-sans-serif, system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    for (let i = 0; i < labels.length; i += step) {
+      ctx.fillText(labels[i], xOf(i), H - PAD.bottom + 18);
+    }
+
+    return { xOf, yOf, cW, cH, PAD };
+  }
+
+  // Animate draw
+  let progress = animated ? 0 : 1;
+  const duration = 1400;
+  const start = performance.now();
+
+  function frame(now) {
+    const elapsed = now - start;
+    progress = Math.min(elapsed / duration, 1);
+    // ease out cubic
+    const t = 1 - Math.pow(1 - progress, 3);
+
+    const { xOf, yOf } = render();
+    const drawCount = Math.max(2, Math.round(t * values.length));
+
+    // Filled area
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height / Math.min(window.devicePixelRatio||1,2));
+    grad.addColorStop(0, color + '33');
+    grad.addColorStop(1, color + '00');
+    ctx.beginPath();
+    ctx.moveTo(xOf(0), yOf(values[0]));
+    for (let i = 1; i < drawCount; i++) ctx.lineTo(xOf(i), yOf(values[i]));
+    ctx.lineTo(xOf(drawCount - 1), yOf(0));
+    ctx.lineTo(xOf(0), yOf(0));
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    ctx.moveTo(xOf(0), yOf(values[0]));
+    for (let i = 1; i < drawCount; i++) ctx.lineTo(xOf(i), yOf(values[i]));
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.2;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+
+    // Dot at current end
+    const lx = xOf(drawCount - 1);
+    const ly = yOf(values[drawCount - 1]);
+    ctx.beginPath();
+    ctx.arc(lx, ly, 5, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(lx, ly, 3, 0, Math.PI * 2);
+    ctx.fillStyle = isDark ? '#0e0f11' : '#fff';
+    ctx.fill();
+
+    if (progress < 1) requestAnimationFrame(frame);
+  }
+
+  requestAnimationFrame(frame);
+
+  // Redraw on resize
+  window.addEventListener('resize', () => render());
+}
+
+// ── Update summary card ──
+function updateCard(id, current, history) {
+  document.getElementById(id + '-current').textContent = current;
+  const changeEl = document.getElementById(id + '-change');
+  if (history && history.length >= 2) {
+    const diff = current - history[0];
+    const sign = diff > 0 ? '+' : '';
+    changeEl.textContent = `${sign}${diff} since first recorded`;
+    changeEl.className = 'rating-card-change ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral');
+  }
+}
+
+function showError(id) {
+  document.getElementById(id + '-loading').style.display = 'none';
+  document.getElementById(id + '-error').style.display = 'flex';
+}
+
+function hideLoading(id) {
+  document.getElementById(id + '-loading').style.display = 'none';
+}
+
+// ══════════════════════════════════
+//  LICHESS — rating history API
+// ══════════════════════════════════
+async function loadLichess() {
+  try {
+    const res = await fetch('https://lichess.org/api/user/BigSoonj/rating-history', {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    // Find Blitz
+    const blitz = data.find(d => d.name === 'Blitz');
+    if (!blitz || !blitz.points.length) throw new Error('No blitz data');
+
+    // points format: [year, month (0-indexed), day, rating]
+    const points = blitz.points.slice(-120); // last ~120 entries
+    const labels = points.map(p => {
+      const d = new Date(p[0], p[1], p[2]);
+      return d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+    });
+    const values = points.map(p => p[3]);
+
+    hideLoading('lichess');
+    updateCard('lichess', values[values.length - 1], values);
+    drawChart('lichess-canvas', labels, values, COLORS.lichess);
+  } catch (e) {
+    console.error('Lichess error:', e);
+    showError('lichess');
+    document.getElementById('lichess-current').textContent = 'N/A';
+    document.getElementById('lichess-change').textContent = 'Could not load';
+  }
+}
+
+// ══════════════════════════════════
+//  CHESS.COM — stats API
+//  Note: Chess.com blocks direct browser CORS requests.
+//  The page tries anyway and shows a helpful message if blocked.
+// ══════════════════════════════════
+async function loadChessCom() {
+  try {
+    // Get list of monthly archives
+    const archivesRes = await fetch('https://api.chess.com/pub/player/hog_hedge/games/archives');
+    if (!archivesRes.ok) throw new Error('Archives HTTP ' + archivesRes.status);
+    const archivesData = await archivesRes.json();
+
+    // Get last 6 months of archives for rating snapshots
+    const archives = archivesData.archives.slice(-6);
+    const ratingByMonth = [];
+
+    for (const url of archives) {
+      const parts = url.split('/');
+      const year  = parts[parts.length - 2];
+      const month = parts[parts.length - 1];
+      try {
+        const gamesRes = await fetch(url);
+        if (!gamesRes.ok) continue;
+        const gamesData = await gamesRes.json();
+        const blitzGames = (gamesData.games || []).filter(g => g.time_class === 'blitz');
+        if (!blitzGames.length) continue;
+        // Use the last blitz game's rating for this month
+        const last = blitzGames[blitzGames.length - 1];
+        const rating = last.white?.username?.toLowerCase() === 'hog_hedge'
+          ? last.white.rating
+          : last.black.rating;
+        ratingByMonth.push({
+          label: new Date(year, month - 1).toLocaleDateString('en-GB', { month: 'short', year: '2-digit' }),
+          rating
+        });
+      } catch { continue; }
+    }
+
+    // Also fetch current stats
+    const statsRes = await fetch('https://api.chess.com/pub/player/hog_hedge/stats');
+    if (!statsRes.ok) throw new Error('Stats HTTP ' + statsRes.status);
+    const stats = await statsRes.json();
+    const currentRating = stats?.chess_blitz?.last?.rating;
+
+    if (!ratingByMonth.length && !currentRating) throw new Error('No data');
+
+    const labels = ratingByMonth.map(r => r.label);
+    const values = ratingByMonth.map(r => r.rating);
+
+    if (currentRating && (values.length === 0 || values[values.length - 1] !== currentRating)) {
+      labels.push('Now');
+      values.push(currentRating);
+    }
+
+    hideLoading('chesscom');
+    if (values.length >= 2) {
+      updateCard('chesscom', values[values.length - 1], values);
+      drawChart('chesscom-canvas', labels, values, COLORS.chesscom);
+    } else if (currentRating) {
+      document.getElementById('chesscom-current').textContent = currentRating;
+      document.getElementById('chesscom-change').textContent = 'Not enough history for graph';
+      document.getElementById('chesscom-change').className = 'rating-card-change neutral';
+      hideLoading('chesscom');
+    }
+
+  } catch (e) {
+    console.error('Chess.com error:', e);
+    showError('chesscom');
+    document.getElementById('chesscom-current').textContent = 'N/A';
+    document.getElementById('chesscom-change').textContent = 'CORS blocked — see note';
+    document.getElementById('chesscom-error').innerHTML =
+      `⚠️ Chess.com blocks direct API calls from browsers.<br>
+       <a href="https://www.chess.com/member/Hog_Hedge" target="_blank" style="color:var(--accent)">View your Chess.com profile directly ↗</a>`;
+  }
+}
+
+// ══════════════════════════════════
+//  FIDE — manual data
+// ══════════════════════════════════
+function loadFide() {
+  if (!FIDE_DATA.length) return;
+  const labels = FIDE_DATA.map(d => d.date);
+  const values = FIDE_DATA.map(d => d.rating);
+  const current = values[values.length - 1];
+
+  document.getElementById('fide-current').textContent = current;
+  const diff = current - values[0];
+  const changeEl = document.getElementById('fide-change');
+  changeEl.textContent = (diff >= 0 ? '+' : '') + diff + ' overall';
+  changeEl.className = 'rating-card-change ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral');
+
+  drawChart('fide-canvas', labels, values, COLORS.fide);
+}
+
+// ── Kick everything off ──
+loadLichess();
+loadChessCom();
+loadFide();
+</script>
+</body>
+</html>
