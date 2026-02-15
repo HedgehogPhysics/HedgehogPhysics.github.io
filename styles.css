@@ -406,9 +406,9 @@ body.art-spotlight-open .art-grid .art-item{
   pointer-events: none;
 }
 
-/* Animated image — fixed so left/top are always viewport-relative */
+/* Animated image (JS controls its position/size) */
 .art-spotlight-img{
-  position: fixed;
+  position: absolute;
   left: 0; top: 0;
   width: 200px; height: 200px;
   border-radius: 14px;
@@ -422,7 +422,6 @@ body.art-spotlight-open .art-grid .art-item{
     height 420ms cubic-bezier(.2,.8,.2,1),
     border-radius 420ms cubic-bezier(.2,.8,.2,1);
   pointer-events: auto;
-  z-index: 10000;
 }
 
 /* Right-side panel — always light bg with dark text regardless of theme */
