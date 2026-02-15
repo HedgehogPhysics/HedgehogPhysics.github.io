@@ -115,30 +115,25 @@ function setImgRect(rect){
 }
 
 function getTargetRect(){
-  const stageRect = spotlightStage.getBoundingClientRect();
   const isMobile = window.matchMedia("(max-width: 900px)").matches;
 
   let imgW, imgH, imgLeft, imgTop;
 
   if (!isMobile){
-    const panelW = Math.min(360, stageRect.width * 0.42);
+    const panelW = Math.min(360, window.innerWidth * 0.42);
     const gap = 24;
-
-    const availW = stageRect.width - panelW - gap;
-    imgW = Math.min(availW, stageRect.width * 0.62);
-    imgH = stageRect.height * 0.86;
+    const availW = window.innerWidth - panelW - gap;
+    imgW = Math.min(availW * 0.75, window.innerWidth * 0.62);
+    imgH = window.innerHeight * 0.86;
 
     const blockW = imgW + gap + panelW;
-    const blockLeft = stageRect.left + (stageRect.width - blockW) / 2;
-
-    imgLeft = blockLeft;
-    imgTop  = stageRect.top + (stageRect.height - imgH) / 2;
+    imgLeft = (window.innerWidth - blockW) / 2;
+    imgTop  = (window.innerHeight - imgH) / 2;
   } else {
-    imgW = stageRect.width * 0.92;
-    imgH = stageRect.height * 0.6;
-
-    imgLeft = stageRect.left + (stageRect.width - imgW) / 2;
-    imgTop = stageRect.top + stageRect.height * 0.05;
+    imgW = window.innerWidth * 0.92;
+    imgH = window.innerHeight * 0.6;
+    imgLeft = (window.innerWidth - imgW) / 2;
+    imgTop  = window.innerHeight * 0.05;
   }
 
   return { left: imgLeft, top: imgTop, width: imgW, height: imgH };
