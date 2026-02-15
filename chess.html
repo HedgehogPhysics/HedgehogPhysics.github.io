@@ -4,17 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Chess Progress — Hedgehog Physics</title>
-  <meta name="description" content="Blitz rating progress across Lichess, Chess.com and FIDE." />
+  <meta name="description" content="Blitz rating progress across Lichess and Chess.com." />
   <link rel="stylesheet" href="styles.css" />
   <style>
-    /* ── Chess page specific styles ── */
-
     .chess-hero {
       position: relative;
       padding: 120px 18px 60px;
       overflow: hidden;
     }
-
     .chess-hero::before {
       content: '';
       position: absolute;
@@ -24,20 +21,17 @@
         radial-gradient(ellipse 40% 50% at 5% 90%, rgba(124,58,237,0.07) 0%, transparent 70%);
       pointer-events: none;
     }
-
     .chess-hero-inner {
       max-width: 1060px;
       margin: 0 auto;
       position: relative;
     }
-
     .chess-hero h1 {
       margin: 16px 0 12px;
       font-size: clamp(36px, 5vw, 62px);
       letter-spacing: -1px;
       line-height: 1.05;
     }
-
     .chess-hero p {
       margin: 0;
       max-width: 58ch;
@@ -45,14 +39,12 @@
       color: var(--muted);
       line-height: 1.65;
     }
-
     .chess-meta {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 22px;
     }
-
     .chess-meta .meta-tag {
       display: inline-flex;
       align-items: center;
@@ -66,14 +58,11 @@
       color: var(--muted);
       font-weight: 600;
     }
-
     .chess-meta .dot {
       width: 6px; height: 6px;
       border-radius: 50%;
       flex-shrink: 0;
     }
-
-    /* ── Main content ── */
     .chess-content {
       max-width: 1060px;
       margin: 0 auto;
@@ -87,7 +76,6 @@
       gap: 14px;
       margin-bottom: 48px;
     }
-
     .rating-card {
       padding: 20px 22px;
       border-radius: var(--radius);
@@ -97,7 +85,6 @@
       position: relative;
       overflow: hidden;
     }
-
     .rating-card::before {
       content: '';
       position: absolute;
@@ -105,11 +92,8 @@
       height: 3px;
       border-radius: 3px 3px 0 0;
     }
-
     .rating-card.lichess::before { background: #2a6df5; }
     .rating-card.chesscom::before { background: #81b64c; }
-    .rating-card.fide::before { background: #f5a623; }
-
     .rating-card-platform {
       font-size: 12px;
       font-weight: 700;
@@ -118,7 +102,6 @@
       color: var(--muted);
       margin-bottom: 8px;
     }
-
     .rating-card-value {
       font-size: 42px;
       font-weight: 800;
@@ -126,23 +109,11 @@
       line-height: 1;
       margin-bottom: 4px;
     }
-
     .rating-card.lichess .rating-card-value { color: #2a6df5; }
     .rating-card.chesscom .rating-card-value { color: #81b64c; }
-    .rating-card.fide .rating-card-value { color: #f5a623; }
-
-    .rating-card-label {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .rating-card-change {
-      font-size: 13px;
-      font-weight: 700;
-      margin-top: 8px;
-    }
-
-    .rating-card-change.up { color: #22c55e; }
+    .rating-card-label { font-size: 12px; color: var(--muted); }
+    .rating-card-change { font-size: 13px; font-weight: 700; margin-top: 8px; }
+    .rating-card-change.up   { color: #22c55e; }
     .rating-card-change.down { color: #ef4444; }
     .rating-card-change.neutral { color: var(--muted); }
 
@@ -152,28 +123,24 @@
       padding-top: 36px;
       margin-top: 36px;
     }
-
     .chart-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
       gap: 12px;
     }
-
     .chart-title {
       display: flex;
       align-items: center;
       gap: 10px;
     }
-
     .chart-title h2 {
       margin: 0;
       font-size: 22px;
       letter-spacing: -.3px;
     }
-
     .platform-badge {
       padding: 4px 10px;
       border-radius: 999px;
@@ -181,16 +148,11 @@
       font-weight: 700;
       letter-spacing: .3px;
     }
-
-    .badge-lichess { background: rgba(42,109,245,0.12); color: #2a6df5; }
+    .badge-lichess  { background: rgba(42,109,245,0.12); color: #2a6df5; }
     .badge-chesscom { background: rgba(129,182,76,0.15); color: #5a9432; }
-    .badge-fide { background: rgba(245,166,35,0.15); color: #c07a10; }
-
     @media (prefers-color-scheme: dark) {
       .badge-chesscom { color: #81b64c; }
-      .badge-fide { color: #f5a623; }
     }
-
     .chart-link {
       font-size: 13px;
       font-weight: 600;
@@ -204,23 +166,71 @@
     }
     .chart-link:hover { color: var(--ink); border-color: rgba(42,109,245,.3); }
 
+    /* ── Timeframe selector ── */
+    .chart-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .timeframe-btns {
+      display: flex;
+      gap: 6px;
+    }
+    .tf-btn {
+      padding: 6px 13px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .15s;
+    }
+    .tf-btn:hover { background: var(--card-bg); color: var(--ink); }
+    .tf-btn.active {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
     /* ── Canvas chart wrapper ── */
     .chart-wrap {
       position: relative;
       width: 100%;
-      height: 280px;
+      height: 300px;
       border-radius: var(--radius);
       border: 1px solid var(--line);
       background: var(--card-bg);
       backdrop-filter: blur(8px);
       overflow: hidden;
     }
-
     .chart-wrap canvas {
       position: absolute;
       inset: 0;
       width: 100% !important;
       height: 100% !important;
+    }
+
+    /* ── Tooltip ── */
+    .chart-tooltip {
+      position: absolute;
+      background: var(--ink);
+      color: var(--bg);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .1s;
+      white-space: nowrap;
+      z-index: 10;
+      transform: translate(-50%, -110%);
     }
 
     /* ── Loading / error states ── */
@@ -235,7 +245,6 @@
       color: var(--muted);
       font-size: 14px;
     }
-
     .spinner {
       width: 28px; height: 28px;
       border: 2px solid var(--line);
@@ -243,9 +252,7 @@
       border-radius: 50%;
       animation: spin .8s linear infinite;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .chart-error {
       position: absolute;
       inset: 0;
@@ -267,7 +274,6 @@
       flex-direction: column;
       gap: 8px;
     }
-
     .annotation {
       display: flex;
       gap: 12px;
@@ -278,7 +284,6 @@
       background: var(--card-bg);
       font-size: 13px;
     }
-
     .annotation-date {
       font-weight: 700;
       color: var(--muted);
@@ -287,12 +292,7 @@
       font-size: 12px;
       padding-top: 1px;
     }
-
-    .annotation-text {
-      color: var(--ink);
-      line-height: 1.5;
-    }
-
+    .annotation-text { color: var(--ink); line-height: 1.5; }
     .annotation-dot {
       width: 8px; height: 8px;
       border-radius: 50%;
@@ -300,21 +300,6 @@
       margin-top: 4px;
     }
 
-    /* ── FIDE manual entry notice ── */
-    .fide-notice {
-      margin-top: 14px;
-      padding: 14px 18px;
-      border-radius: var(--radius);
-      border: 1px solid rgba(245,166,35,0.25);
-      background: rgba(245,166,35,0.06);
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .fide-notice strong { color: var(--ink); }
-
-    /* back link */
     .back-link {
       display: inline-flex;
       align-items: center;
@@ -335,12 +320,12 @@
           radial-gradient(ellipse 50% 60% at 90% 10%, rgba(42,109,245,0.13) 0%, transparent 70%),
           radial-gradient(ellipse 40% 50% at 5% 90%, rgba(124,58,237,0.10) 0%, transparent 70%);
       }
+      .tf-btn.active { background: #eeeef0; color: #0e0f11; border-color: #eeeef0; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Nav -->
   <header class="hero" style="min-height:unset; padding-bottom:0;">
     <nav class="nav">
       <a class="brand" href="index.html">Hedgehog Physics</a>
@@ -353,7 +338,6 @@
     </nav>
   </header>
 
-  <!-- Hero -->
   <section class="chess-hero">
     <div class="chess-hero-inner">
       <a class="back-link" href="index.html">
@@ -363,17 +347,15 @@
         Back to home
       </a>
       <h1>Chess Progress</h1>
-      <p>Live blitz rating history pulled from Lichess, Chess.com and FIDE.</p>
+      <p>Live blitz rating history pulled from Lichess and Chess.com.</p>
       <div class="chess-meta">
         <span class="meta-tag"><span class="dot" style="background:#2a6df5"></span>Lichess · BigSoonj</span>
         <span class="meta-tag"><span class="dot" style="background:#81b64c"></span>Chess.com · Hog_Hedge</span>
-        <span class="meta-tag"><span class="dot" style="background:#f5a623"></span>FIDE · 343482139</span>
-        <span class="meta-tag"><span class="dot" style="background:var(--accent2)"></span>Blitz only</span>
+        <span class="meta-tag"><span class="dot" style="background:var(--accent2)"></span>Blitz</span>
       </div>
     </div>
   </section>
 
-  <!-- Content -->
   <main class="chess-content">
 
     <!-- Summary cards -->
@@ -390,12 +372,6 @@
         <div class="rating-card-label">Blitz rating</div>
         <div class="rating-card-change neutral" id="chesscom-change">Loading…</div>
       </div>
-      <div class="rating-card fide">
-        <div class="rating-card-platform">FIDE</div>
-        <div class="rating-card-value" id="fide-current">—</div>
-        <div class="rating-card-label">Blitz rating</div>
-        <div class="rating-card-change neutral" id="fide-change">Loading…</div>
-      </div>
     </div>
 
     <!-- ── Lichess chart ── -->
@@ -407,6 +383,15 @@
         </div>
         <a class="chart-link" href="https://lichess.org/@/BigSoonj" target="_blank" rel="noopener">View profile ↗</a>
       </div>
+      <div class="chart-controls">
+        <div class="timeframe-btns" id="lichess-tf">
+          <button class="tf-btn" data-months="1"  onclick="setTimeframe('lichess',1,this)">1M</button>
+          <button class="tf-btn" data-months="3"  onclick="setTimeframe('lichess',3,this)">3M</button>
+          <button class="tf-btn" data-months="6"  onclick="setTimeframe('lichess',6,this)">6M</button>
+          <button class="tf-btn" data-months="12" onclick="setTimeframe('lichess',12,this)">1Y</button>
+          <button class="tf-btn active" data-months="0" onclick="setTimeframe('lichess',0,this)">All</button>
+        </div>
+      </div>
       <div class="chart-wrap" id="lichess-wrap">
         <div class="chart-loading" id="lichess-loading">
           <div class="spinner"></div>
@@ -416,9 +401,9 @@
           ⚠️ Could not load Lichess data.<br>Check your connection or try refreshing.
         </div>
         <canvas id="lichess-canvas"></canvas>
+        <div class="chart-tooltip" id="lichess-tooltip"></div>
       </div>
-      <div class="annotations" id="lichess-annotations">
-        <!-- Add your own annotations below — duplicate the .annotation block -->
+      <div class="annotations">
         <div class="annotation">
           <span class="annotation-dot" style="background:#2a6df5"></span>
           <span class="annotation-date">Add date</span>
@@ -436,46 +421,32 @@
         </div>
         <a class="chart-link" href="https://www.chess.com/member/Hog_Hedge" target="_blank" rel="noopener">View profile ↗</a>
       </div>
+      <div class="chart-controls">
+        <div class="timeframe-btns" id="chesscom-tf">
+          <button class="tf-btn" data-months="1"  onclick="setTimeframe('chesscom',1,this)">1M</button>
+          <button class="tf-btn" data-months="3"  onclick="setTimeframe('chesscom',3,this)">3M</button>
+          <button class="tf-btn" data-months="6"  onclick="setTimeframe('chesscom',6,this)">6M</button>
+          <button class="tf-btn" data-months="12" onclick="setTimeframe('chesscom',12,this)">1Y</button>
+          <button class="tf-btn active" data-months="0" onclick="setTimeframe('chesscom',0,this)">All</button>
+        </div>
+      </div>
       <div class="chart-wrap" id="chesscom-wrap">
         <div class="chart-loading" id="chesscom-loading">
           <div class="spinner"></div>
           <span>Fetching from Chess.com…</span>
         </div>
         <div class="chart-error" id="chesscom-error">
-          ⚠️ Could not load Chess.com data.<br>Chess.com's API may require a CORS proxy — see note below.
+          ⚠️ Chess.com blocks direct API calls from browsers.<br>
+          <a href="https://www.chess.com/member/Hog_Hedge" target="_blank" style="color:var(--accent)">View your Chess.com profile directly ↗</a>
         </div>
         <canvas id="chesscom-canvas"></canvas>
+        <div class="chart-tooltip" id="chesscom-tooltip"></div>
       </div>
-      <div class="annotations" id="chesscom-annotations">
+      <div class="annotations">
         <div class="annotation">
           <span class="annotation-dot" style="background:#81b64c"></span>
           <span class="annotation-date">Add date</span>
           <span class="annotation-text">Add a note about a milestone, tournament, or improvement here.</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── FIDE chart ── -->
-    <div class="chart-section">
-      <div class="chart-header">
-        <div class="chart-title">
-          <h2>FIDE</h2>
-          <span class="platform-badge badge-fide">Blitz</span>
-        </div>
-        <a class="chart-link" href="https://ratings.fide.com/profile/343482139" target="_blank" rel="noopener">View profile ↗</a>
-      </div>
-      <div class="chart-wrap" id="fide-wrap">
-        <canvas id="fide-canvas"></canvas>
-      </div>
-      <div class="fide-notice">
-        <strong>Note:</strong> FIDE doesn't provide a public API, so this chart uses manually entered rating history.
-        Update the <code>FIDE_DATA</code> array in <code>chess.html</code> each rating period to keep it current.
-      </div>
-      <div class="annotations" id="fide-annotations">
-        <div class="annotation">
-          <span class="annotation-dot" style="background:#f5a623"></span>
-          <span class="annotation-date">Add date</span>
-          <span class="annotation-text">Add a note about a tournament result or rating change here.</span>
         </div>
       </div>
     </div>
@@ -489,35 +460,59 @@
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// ═══════════════════════════════════════════════════════
-//  FIDE FALLBACK DATA — used if the API is unavailable
-//  Update with your real rating history if needed.
-//  Format: { date: 'YYYY-MM', rating: NUMBER }
-// ═══════════════════════════════════════════════════════
-const FIDE_DATA = [
-  { date: '2025-01', rating: 1200 }, // ← replace with your real historical data
-];
-// ═══════════════════════════════════════════════════════
-
-// ── Detect dark mode ──
 const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const COLORS = {
   lichess:  '#2a6df5',
   chesscom: '#81b64c',
-  fide:     '#f5a623',
-  grid:     isDark ? 'rgba(238,238,240,0.07)' : 'rgba(16,17,20,0.07)',
-  label:    isDark ? 'rgba(238,238,240,0.45)' : 'rgba(16,17,20,0.45)',
-  text:     isDark ? '#eeeef0' : '#101114',
+  grid:  isDark ? 'rgba(238,238,240,0.07)' : 'rgba(16,17,20,0.07)',
+  label: isDark ? 'rgba(238,238,240,0.45)' : 'rgba(16,17,20,0.45)',
+  bg:    isDark ? '#0e0f11' : '#ffffff',
 };
 
-// ── Generic animated line chart ──
-function drawChart(canvasId, labels, values, color, animated = true) {
+// Store full datasets so we can re-slice on timeframe change
+const DATA = { lichess: null, chesscom: null };
+const TIMEFRAME = { lichess: 0, chesscom: 0 }; // 0 = all
+
+// ── Filter data by months ──
+function filterByMonths(labels, values, months) {
+  if (!months) return { labels, values };
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - months);
+  const filtered = labels.map((l, i) => ({ l, v: values[i] }))
+    .filter(({ l }) => {
+      const d = new Date(l);
+      return !isNaN(d) && d >= cutoff;
+    });
+  if (filtered.length < 2) return { labels, values }; // not enough data, show all
+  return { labels: filtered.map(x => x.l), values: filtered.map(x => x.v) };
+}
+
+// ── Timeframe button handler ──
+function setTimeframe(platform, months, btn) {
+  TIMEFRAME[platform] = months;
+  // Update active button
+  btn.closest('.timeframe-btns').querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Redraw
+  if (DATA[platform]) {
+    const { labels, values } = filterByMonths(DATA[platform].labels, DATA[platform].values, months);
+    redrawChart(platform + '-canvas', labels, values, COLORS[platform], platform + '-tooltip');
+    updateCard(platform, values[values.length - 1], values);
+  }
+}
+
+// ── Draw / redraw chart ──
+function redrawChart(canvasId, labels, values, color, tooltipId) {
   const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
+  if (!canvas || values.length < 2) return;
+  const tooltipEl = document.getElementById(tooltipId);
   const ctx = canvas.getContext('2d');
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-  function render() {
+  // Store for resize
+  canvas._chartData = { labels, values, color, tooltipId };
+
+  function render(animated) {
     const W = canvas.parentElement.clientWidth;
     const H = canvas.parentElement.clientHeight;
     canvas.width  = W * dpr;
@@ -526,73 +521,67 @@ function drawChart(canvasId, labels, values, color, animated = true) {
     canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const PAD = { top: 24, right: 24, bottom: 44, left: 56 };
+    const PAD = { top: 24, right: 20, bottom: 44, left: 56 };
     const cW = W - PAD.left - PAD.right;
     const cH = H - PAD.top  - PAD.bottom;
+    const n  = values.length;
 
     const minV = Math.min(...values);
     const maxV = Math.max(...values);
     const range = maxV - minV || 1;
-    const pad = range * 0.15;
-    const lo = minV - pad;
-    const hi = maxV + pad;
+    const lo = minV - range * 0.12;
+    const hi = maxV + range * 0.12;
 
-    const xOf = i => PAD.left + (i / (values.length - 1)) * cW;
+    const xOf = i => PAD.left + (i / (n - 1)) * cW;
     const yOf = v => PAD.top  + (1 - (v - lo) / (hi - lo)) * cH;
 
-    // Grid lines
-    const steps = 5;
+    // Grid
     ctx.strokeStyle = COLORS.grid;
     ctx.lineWidth = 1;
-    for (let s = 0; s <= steps; s++) {
-      const v = lo + (hi - lo) * (s / steps);
+    for (let s = 0; s <= 5; s++) {
+      const v = lo + (hi - lo) * (s / 5);
       const y = yOf(v);
-      ctx.beginPath();
-      ctx.moveTo(PAD.left, y);
-      ctx.lineTo(PAD.left + cW, y);
-      ctx.stroke();
-
+      ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cW, y); ctx.stroke();
       ctx.fillStyle = COLORS.label;
       ctx.font = '11px ui-sans-serif, system-ui, sans-serif';
       ctx.textAlign = 'right';
       ctx.fillText(Math.round(v), PAD.left - 8, y + 4);
     }
 
-    // X axis labels (show ~6 evenly spaced)
-    const step = Math.max(1, Math.floor(labels.length / 6));
+    // X labels — show ~6 evenly spaced, formatted nicely
+    const step = Math.max(1, Math.floor(n / 6));
     ctx.fillStyle = COLORS.label;
     ctx.font = '11px ui-sans-serif, system-ui, sans-serif';
     ctx.textAlign = 'center';
-    for (let i = 0; i < labels.length; i += step) {
-      ctx.fillText(labels[i], xOf(i), H - PAD.bottom + 18);
+    for (let i = 0; i < n; i += step) {
+      const raw = labels[i];
+      const d = new Date(raw);
+      const lbl = isNaN(d) ? raw : d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+      ctx.fillText(lbl, xOf(i), H - PAD.bottom + 18);
     }
 
-    return { xOf, yOf, cW, cH, PAD };
+    return { xOf, yOf, PAD, cW, cH, W, H };
   }
 
-  // Animate draw
-  let progress = animated ? 0 : 1;
-  const duration = 1400;
+  // Animate
+  const duration = 1200;
   const start = performance.now();
 
   function frame(now) {
-    const elapsed = now - start;
-    progress = Math.min(elapsed / duration, 1);
-    // ease out cubic
-    const t = 1 - Math.pow(1 - progress, 3);
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    const { xOf, yOf, PAD, H } = render(true);
+    const drawCount = Math.max(2, Math.round(ease * values.length));
 
-    const { xOf, yOf } = render();
-    const drawCount = Math.max(2, Math.round(t * values.length));
-
-    // Filled area
-    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height / Math.min(window.devicePixelRatio||1,2));
-    grad.addColorStop(0, color + '33');
+    // Fill
+    const grad = ctx.createLinearGradient(0, PAD.top, 0, H - PAD.bottom);
+    grad.addColorStop(0, color + '40');
     grad.addColorStop(1, color + '00');
     ctx.beginPath();
     ctx.moveTo(xOf(0), yOf(values[0]));
     for (let i = 1; i < drawCount; i++) ctx.lineTo(xOf(i), yOf(values[i]));
-    ctx.lineTo(xOf(drawCount - 1), yOf(0));
-    ctx.lineTo(xOf(0), yOf(0));
+    ctx.lineTo(xOf(drawCount - 1), H - PAD.bottom);
+    ctx.lineTo(xOf(0), H - PAD.bottom);
     ctx.closePath();
     ctx.fillStyle = grad;
     ctx.fill();
@@ -606,76 +595,138 @@ function drawChart(canvasId, labels, values, color, animated = true) {
     ctx.lineJoin = 'round';
     ctx.stroke();
 
-    // Dot at current end
-    const lx = xOf(drawCount - 1);
-    const ly = yOf(values[drawCount - 1]);
-    ctx.beginPath();
-    ctx.arc(lx, ly, 5, 0, Math.PI * 2);
-    ctx.fillStyle = color;
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(lx, ly, 3, 0, Math.PI * 2);
-    ctx.fillStyle = isDark ? '#0e0f11' : '#fff';
-    ctx.fill();
+    // End dot
+    const lx = xOf(drawCount - 1), ly = yOf(values[drawCount - 1]);
+    ctx.beginPath(); ctx.arc(lx, ly, 5, 0, Math.PI * 2);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.beginPath(); ctx.arc(lx, ly, 3, 0, Math.PI * 2);
+    ctx.fillStyle = isDark ? '#0e0f11' : '#fff'; ctx.fill();
 
-    if (progress < 1) requestAnimationFrame(frame);
+    if (t < 1) requestAnimationFrame(frame);
   }
 
   requestAnimationFrame(frame);
 
-  // Redraw on resize
-  window.addEventListener('resize', () => render());
+  // ── Hover tooltip ──
+  function getHoverIndex(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const W = canvas.parentElement.clientWidth;
+    const PAD = { left: 56, right: 20 };
+    const cW = W - PAD.left - PAD.right;
+    const n = values.length;
+    const idx = Math.round(((mx - PAD.left) / cW) * (n - 1));
+    return Math.max(0, Math.min(n - 1, idx));
+  }
+
+  canvas.onmousemove = (e) => {
+    const { xOf, yOf } = render(false);
+    const i = getHoverIndex(e);
+    const x = xOf(i), y = yOf(values[i]);
+
+    // Redraw with hover dot
+    const { PAD, H } = render(false);
+    const grad = ctx.createLinearGradient(0, PAD.top, 0, H - PAD.bottom);
+    grad.addColorStop(0, color + '40');
+    grad.addColorStop(1, color + '00');
+    ctx.beginPath();
+    ctx.moveTo(xOf(0), yOf(values[0]));
+    for (let j = 1; j < values.length; j++) ctx.lineTo(xOf(j), yOf(values[j]));
+    ctx.lineTo(xOf(values.length - 1), H - PAD.bottom);
+    ctx.lineTo(xOf(0), H - PAD.bottom);
+    ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(xOf(0), yOf(values[0]));
+    for (let j = 1; j < values.length; j++) ctx.lineTo(xOf(j), yOf(values[j]));
+    ctx.strokeStyle = color; ctx.lineWidth = 2.2; ctx.lineJoin = 'round'; ctx.stroke();
+
+    // Vertical crosshair
+    ctx.beginPath();
+    ctx.moveTo(x, PAD.top); ctx.lineTo(x, H - PAD.bottom);
+    ctx.strokeStyle = color + '55'; ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+
+    // Hover dot
+    ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = isDark ? '#0e0f11' : '#fff'; ctx.fill();
+
+    // Tooltip
+    const raw = labels[i];
+    const d = new Date(raw);
+    const dateLbl = isNaN(d) ? raw : d.toLocaleDateString('en-GB', { month: 'short', day: 'numeric', year: 'numeric' });
+    if (tooltipEl) {
+      tooltipEl.textContent = `${values[i]}  ·  ${dateLbl}`;
+      tooltipEl.style.left = x + 'px';
+      tooltipEl.style.top  = y + 'px';
+      tooltipEl.style.opacity = '1';
+    }
+  };
+
+  canvas.onmouseleave = () => {
+    if (tooltipEl) tooltipEl.style.opacity = '0';
+    // Redraw clean
+    const { xOf, yOf, PAD, H } = render(false);
+    const grad = ctx.createLinearGradient(0, PAD.top, 0, H - PAD.bottom);
+    grad.addColorStop(0, color + '40'); grad.addColorStop(1, color + '00');
+    ctx.beginPath();
+    ctx.moveTo(xOf(0), yOf(values[0]));
+    for (let j = 1; j < values.length; j++) ctx.lineTo(xOf(j), yOf(values[j]));
+    ctx.lineTo(xOf(values.length - 1), H - PAD.bottom);
+    ctx.lineTo(xOf(0), H - PAD.bottom);
+    ctx.closePath(); ctx.fillStyle = grad; ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(xOf(0), yOf(values[0]));
+    for (let j = 1; j < values.length; j++) ctx.lineTo(xOf(j), yOf(values[j]));
+    ctx.strokeStyle = color; ctx.lineWidth = 2.2; ctx.lineJoin = 'round'; ctx.stroke();
+    const lx = xOf(values.length - 1), ly = yOf(values[values.length - 1]);
+    ctx.beginPath(); ctx.arc(lx, ly, 5, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+    ctx.beginPath(); ctx.arc(lx, ly, 3, 0, Math.PI * 2);
+    ctx.fillStyle = isDark ? '#0e0f11' : '#fff'; ctx.fill();
+  };
 }
 
 // ── Update summary card ──
-function updateCard(id, current, history) {
+function updateCard(id, current, values) {
   document.getElementById(id + '-current').textContent = current;
   const changeEl = document.getElementById(id + '-change');
-  if (history && history.length >= 2) {
-    const diff = current - history[0];
-    const sign = diff > 0 ? '+' : '';
-    changeEl.textContent = `${sign}${diff} since first recorded`;
-    changeEl.className = 'rating-card-change ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral');
-  }
+  const diff = current - values[0];
+  const sign = diff > 0 ? '+' : '';
+  const period = TIMEFRAME[id] ? `last ${TIMEFRAME[id]}mo` : 'all time';
+  changeEl.textContent = `${sign}${diff} (${period})`;
+  changeEl.className = 'rating-card-change ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral');
 }
 
 function showError(id) {
   document.getElementById(id + '-loading').style.display = 'none';
   document.getElementById(id + '-error').style.display = 'flex';
 }
-
 function hideLoading(id) {
   document.getElementById(id + '-loading').style.display = 'none';
 }
 
 // ══════════════════════════════════
-//  LICHESS — rating history API
+//  LICHESS
 // ══════════════════════════════════
 async function loadLichess() {
   try {
-    const res = await fetch('https://lichess.org/api/user/BigSoonj/rating-history', {
-      headers: { 'Accept': 'application/json' }
-    });
+    const res = await fetch('https://lichess.org/api/user/BigSoonj/rating-history');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-
-    // Find Blitz
     const blitz = data.find(d => d.name === 'Blitz');
     if (!blitz || !blitz.points.length) throw new Error('No blitz data');
 
-    // points format: [year, month (0-indexed), day, rating]
-    const points = blitz.points.slice(-120); // last ~120 entries
-    const labels = points.map(p => {
-      const d = new Date(p[0], p[1], p[2]);
-      return d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
-    });
+    const points = blitz.points;
+    const labels = points.map(p => new Date(p[0], p[1], p[2]).toISOString().split('T')[0]);
     const values = points.map(p => p[3]);
 
+    DATA.lichess = { labels, values };
     hideLoading('lichess');
     updateCard('lichess', values[values.length - 1], values);
-    drawChart('lichess-canvas', labels, values, COLORS.lichess);
+    redrawChart('lichess-canvas', labels, values, COLORS.lichess, 'lichess-tooltip');
   } catch (e) {
-    console.error('Lichess error:', e);
+    console.error('Lichess:', e);
     showError('lichess');
     document.getElementById('lichess-current').textContent = 'N/A';
     document.getElementById('lichess-change').textContent = 'Could not load';
@@ -683,24 +734,19 @@ async function loadLichess() {
 }
 
 // ══════════════════════════════════
-//  CHESS.COM — stats API
-//  Note: Chess.com blocks direct browser CORS requests.
-//  The page tries anyway and shows a helpful message if blocked.
+//  CHESS.COM
 // ══════════════════════════════════
 async function loadChessCom() {
   try {
-    // Get list of monthly archives
     const archivesRes = await fetch('https://api.chess.com/pub/player/hog_hedge/games/archives');
-    if (!archivesRes.ok) throw new Error('Archives HTTP ' + archivesRes.status);
+    if (!archivesRes.ok) throw new Error('HTTP ' + archivesRes.status);
     const archivesData = await archivesRes.json();
+    const archives = archivesData.archives.slice(-12); // last 12 months
 
-    // Get last 6 months of archives for rating snapshots
-    const archives = archivesData.archives.slice(-6);
     const ratingByMonth = [];
-
     for (const url of archives) {
       const parts = url.split('/');
-      const year  = parts[parts.length - 2];
+      const year = parts[parts.length - 2];
       const month = parts[parts.length - 1];
       try {
         const gamesRes = await fetch(url);
@@ -708,19 +754,16 @@ async function loadChessCom() {
         const gamesData = await gamesRes.json();
         const blitzGames = (gamesData.games || []).filter(g => g.time_class === 'blitz');
         if (!blitzGames.length) continue;
-        // Use the last blitz game's rating for this month
         const last = blitzGames[blitzGames.length - 1];
         const rating = last.white?.username?.toLowerCase() === 'hog_hedge'
-          ? last.white.rating
-          : last.black.rating;
+          ? last.white.rating : last.black.rating;
         ratingByMonth.push({
-          label: new Date(year, month - 1).toLocaleDateString('en-GB', { month: 'short', year: '2-digit' }),
+          label: new Date(year, month - 1, 15).toISOString().split('T')[0],
           rating
         });
       } catch { continue; }
     }
 
-    // Also fetch current stats
     const statsRes = await fetch('https://api.chess.com/pub/player/hog_hedge/stats');
     if (!statsRes.ok) throw new Error('Stats HTTP ' + statsRes.status);
     const stats = await statsRes.json();
@@ -730,100 +773,36 @@ async function loadChessCom() {
 
     const labels = ratingByMonth.map(r => r.label);
     const values = ratingByMonth.map(r => r.rating);
-
-    if (currentRating && (values.length === 0 || values[values.length - 1] !== currentRating)) {
-      labels.push('Now');
+    if (currentRating && values[values.length - 1] !== currentRating) {
+      labels.push(new Date().toISOString().split('T')[0]);
       values.push(currentRating);
     }
 
-    hideLoading('chesscom');
-    if (values.length >= 2) {
-      updateCard('chesscom', values[values.length - 1], values);
-      drawChart('chesscom-canvas', labels, values, COLORS.chesscom);
-    } else if (currentRating) {
-      document.getElementById('chesscom-current').textContent = currentRating;
-      document.getElementById('chesscom-change').textContent = 'Not enough history for graph';
-      document.getElementById('chesscom-change').className = 'rating-card-change neutral';
-      hideLoading('chesscom');
-    }
+    if (values.length < 2) throw new Error('Not enough data points');
 
+    DATA.chesscom = { labels, values };
+    hideLoading('chesscom');
+    updateCard('chesscom', values[values.length - 1], values);
+    redrawChart('chesscom-canvas', labels, values, COLORS.chesscom, 'chesscom-tooltip');
   } catch (e) {
-    console.error('Chess.com error:', e);
+    console.error('Chess.com:', e);
     showError('chesscom');
     document.getElementById('chesscom-current').textContent = 'N/A';
-    document.getElementById('chesscom-change').textContent = 'CORS blocked — see note';
-    document.getElementById('chesscom-error').innerHTML =
-      `⚠️ Chess.com blocks direct API calls from browsers.<br>
-       <a href="https://www.chess.com/member/Hog_Hedge" target="_blank" style="color:var(--accent)">View your Chess.com profile directly ↗</a>`;
+    document.getElementById('chesscom-change').textContent = 'Could not load';
   }
 }
 
-// ══════════════════════════════════
-//  FIDE — live via ChessTools API
-//  Falls back to FIDE_DATA if API fails
-// ══════════════════════════════════
-async function loadFide() {
-  try {
-    // Try ChessTools free FIDE API (CORS-enabled)
-    const res = await fetch('https://api.chesstools.org/fide/player/343482139');
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
+// ── Resize handler ──
+window.addEventListener('resize', () => {
+  ['lichess', 'chesscom'].forEach(p => {
+    if (!DATA[p]) return;
+    const { labels, values } = filterByMonths(DATA[p].labels, DATA[p].values, TIMEFRAME[p]);
+    redrawChart(p + '-canvas', labels, values, COLORS[p], p + '-tooltip');
+  });
+});
 
-    // Current rating — blitz first
-    const current = data.blitz_elo || data.rapid_elo || data.standard_elo;
-    if (!current) throw new Error('No rating in response');
-
-    document.getElementById('fide-current').textContent = current;
-
-    // Build history from API if available, else use manual data as graph
-    let labels, values;
-    if (data.rating_history && data.rating_history.length > 1) {
-      const history = [...data.rating_history].reverse(); // oldest first
-      labels = history.map(h => h.date);
-      values = history.map(h => parseInt(h.blitz) || parseInt(h.rapid) || parseInt(h.standard));
-    } else if (FIDE_DATA.length > 1) {
-      // Use manual data for graph shape but override current with live value
-      labels = FIDE_DATA.map(d => d.date);
-      values = FIDE_DATA.map(d => d.rating);
-      values[values.length - 1] = current;
-    } else {
-      labels = ['Now'];
-      values = [current];
-    }
-
-    const diff = current - values[0];
-    const changeEl = document.getElementById('fide-change');
-    changeEl.textContent = (diff >= 0 ? '+' : '') + diff + ' overall';
-    changeEl.className = 'rating-card-change ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral');
-
-    // Update notice to show it's live
-    const notice = document.querySelector('.fide-notice');
-    if (notice) notice.innerHTML = '<strong>Live data</strong> from the FIDE rating database via ChessTools API. Updates each rating period automatically.';
-
-    if (values.length >= 2) drawChart('fide-canvas', labels, values, COLORS.fide);
-
-  } catch (e) {
-    console.warn('ChessTools API failed, using manual FIDE data:', e);
-    // Fall back to manual data
-    if (!FIDE_DATA.length) return;
-    const labels = FIDE_DATA.map(d => d.date);
-    const values = FIDE_DATA.map(d => d.rating);
-    const current = values[values.length - 1];
-
-    document.getElementById('fide-current').textContent = current;
-    const diff = current - values[0];
-    const changeEl = document.getElementById('fide-change');
-    changeEl.textContent = (diff >= 0 ? '+' : '') + diff + ' overall';
-    changeEl.className = 'rating-card-change ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'neutral');
-
-    drawChart('fide-canvas', labels, values, COLORS.fide);
-  }
-}
-
-// ── Kick everything off ──
 loadLichess();
 loadChessCom();
-loadFide();
 </script>
 </body>
 </html>
