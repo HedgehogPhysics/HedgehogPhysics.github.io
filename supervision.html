@@ -314,7 +314,6 @@
       }
 
       .cat-tab {
-        background: transparent;
         color: var(--muted);
       }
 
@@ -324,29 +323,49 @@
       }
 
       .cat-tab.active {
-        background: var(--ink);
+        background: #eeeef0;
         color: #0e0f11;
+        border-color: #eeeef0;
       }
 
       .file-card {
-        background: rgba(255,255,255,0.05);
+        background: rgba(255,255,255,0.06);
       }
 
       .file-card:hover {
-        background: rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.10);
+        border-color: rgba(42,109,245,0.35);
       }
 
       .file-download {
-        background: rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.10);
+        border-color: rgba(238,238,240,0.15);
+        color: #eeeef0;
+      }
+
+      .file-card:hover .file-download {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
       }
 
       .file-icon {
         background: rgba(42,109,245,0.15);
       }
 
+      .file-icon.notes {
+        background: rgba(124,58,237,0.15);
+      }
+
       .notice {
         background: rgba(42,109,245,0.08);
         border-color: rgba(42,109,245,0.25);
+      }
+
+      .subject-title-group p code {
+        background: rgba(255,255,255,0.08);
+        padding: 1px 5px;
+        border-radius: 4px;
       }
     }
   </style>
