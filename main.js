@@ -121,26 +121,46 @@ function getTargetRect(){
   let imgW, imgH, imgLeft, imgTop;
 
   if (!isMobile){
-  const panelW = Math.min(360, stageRect.width * 0.42);
-  const gap = 24;
+    const panelW = Math.min(360, stageRect.width * 0.42);
+    const gap = 24;
 
-  // Give image some breathing room so the whole (image+panel) can be centered
-  const availW = stageRect.width - panelW - gap;
-  imgW = Math.min(availW, stageRect.width * 0.62);   // <- key change
-  imgH = stageRect.height*0.86;
+    const availW = stageRect.width - panelW - gap;
+    imgW = Math.min(availW, stageRect.width * 0.62);
+    imgH = stageRect.height * 0.86;
 
-  // Center the combined block (img + gap + panel) within the stage
-  const blockW = imgW + gap + panelW;
-  const blockLeft = stageRect.left + (stageRect.width - blockW) / 2;
+    const blockW = imgW + gap + panelW;
+    const blockLeft = stageRect.left + (stageRect.width - blockW) / 2;
 
-  imgLeft = blockLeft;                // image starts at block left
-  imgTop  = stageRect.top + (stageRect.height - imgH) / 2;           // full height already
-} else {
+    imgLeft = blockLeft;
+    imgTop  = stageRect.top + (stageRect.height - imgH) / 2;
+  } else {
     imgW = stageRect.width * 0.92;
     imgH = stageRect.height * 0.6;
 
     imgLeft = stageRect.left + (stageRect.width - imgW) / 2;
     imgTop = stageRect.top + stageRect.height * 0.05;
+  }
+
+  return { left: imgLeft, top: imgTop, width: imgW, height: imgH };
+}
+
+// Get the full-screen centred rect (no panel offset)
+function getFullRect(){
+  const stageRect = spotlightStage.getBoundingClientRect();
+  const isMobile = window.matchMedia("(max-width: 900px)").matches;
+
+  let imgW, imgH, imgLeft, imgTop;
+
+  if (!isMobile){
+    imgW = stageRect.width * 0.80;
+    imgH = stageRect.height * 0.90;
+    imgLeft = stageRect.left + (stageRect.width - imgW) / 2;
+    imgTop  = stageRect.top  + (stageRect.height - imgH) / 2;
+  } else {
+    imgW = stageRect.width * 0.92;
+    imgH = stageRect.height * 0.75;
+    imgLeft = stageRect.left + (stageRect.width - imgW) / 2;
+    imgTop  = stageRect.top  + (stageRect.height - imgH) / 2;
   }
 
   return { left: imgLeft, top: imgTop, width: imgW, height: imgH };
@@ -168,7 +188,7 @@ function openSpotlight(fromImg){
   // Force layout so transitions kick in
   spotlightImg.getBoundingClientRect();
 
-  // Animate to target
+  // Animate to target (with panel visible alongside)
   const t = getTargetRect();
   requestAnimationFrame(() => {
     setImgRect(t);
@@ -180,6 +200,17 @@ function openSpotlight(fromImg){
   }, 180);
 }
 
+// Hides just the panel and expands image to fill the stage
+function hidePanel(){
+  spotlightPanel.classList.remove("is-visible");
+  // Expand image to full centre now panel is gone
+  const t = getFullRect();
+  requestAnimationFrame(() => {
+    setImgRect(t);
+  });
+}
+
+// Fully closes the spotlight and animates image back to thumbnail
 function closeSpotlight(){
   spotlightPanel.classList.remove("is-visible");
 
@@ -199,18 +230,26 @@ function closeSpotlight(){
 
 // Click handlers
 document.addEventListener("click", (e) => {
+  // Open spotlight on artwork click
   const img = e.target.closest(".art-item img");
   if (img) {
     openSpotlight(img);
     return;
   }
 
-  if (e.target === spotlightBackdrop || e.target === spotlightClose) {
+  // X button — hide panel only, expand image
+  if (e.target.closest("#artSpotlightClose")) {
+    hidePanel();
+    return;
+  }
+
+  // Click backdrop — close everything
+  if (e.target === spotlightBackdrop) {
     closeSpotlight();
   }
 });
 
-// ESC closes
+// ESC closes everything
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && spotlight.classList.contains("is-open")) {
     closeSpotlight();
@@ -220,7 +259,7 @@ document.addEventListener("keydown", (e) => {
 // Resize while open: keep spotlight aligned
 window.addEventListener("resize", () => {
   if (!spotlight.classList.contains("is-open")) return;
-  const t = getTargetRect();
+  const isPanelVisible = spotlightPanel.classList.contains("is-visible");
+  const t = isPanelVisible ? getTargetRect() : getFullRect();
   setImgRect(t);
 });
-
