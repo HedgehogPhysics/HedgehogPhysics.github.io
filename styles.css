@@ -7,6 +7,20 @@
   --accent2: #7c3aed;
   --shadow: 0 18px 50px rgba(16,17,20,.10);
   --radius: 18px;
+  --card-bg: rgba(255,255,255,0.65);
+  --nav-bg: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e0f11;
+    --ink: #eeeef0;
+    --muted: rgba(238,238,240,.55);
+    --line: rgba(238,238,240,.10);
+    --shadow: 0 18px 50px rgba(0,0,0,.35);
+    --card-bg: rgba(255,255,255,0.05);
+    --nav-bg: transparent;
+  }
 }
 
 *{ box-sizing: border-box; }
@@ -91,7 +105,7 @@ body{
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--muted);
-  background: rgba(255,255,255,.6);
+  background: var(--card-bg);
   backdrop-filter: blur(8px);
 }
 
@@ -132,7 +146,7 @@ body{
   border: 1px solid var(--line);
   text-decoration:none;
   color: var(--ink);
-  background: rgba(255,255,255,.72);
+  background: var(--card-bg);
   backdrop-filter: blur(8px);
   box-shadow: 0 1px 0 rgba(16,17,20,.04);
   font-weight: 700;
@@ -186,7 +200,7 @@ body{
 
 #hedgehog-svg{
   width: 100%;
-  max-width: 520px;
+  max-width: 480px;
   height: auto;
   display: block;
   overflow: visible;
@@ -194,19 +208,14 @@ body{
 
 /* Wireframe path style */
 #hedgehog-svg .draw-path {
-  fill: none;
+  fill: none !important;
   stroke: var(--ink);
-  stroke-width: 1.4;
+  stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
-  opacity: 0.7;
-  /* dasharray/dashoffset set by JS */
-}
-
-/* Subtle glow on the stroke after it draws in */
-#hedgehog-svg .draw-path {
-  filter: drop-shadow(0 0 6px rgba(42, 109, 245, 0.18));
+  opacity: 0.65;
+  filter: drop-shadow(0 0 8px rgba(42, 109, 245, 0.15));
 }
 
 /* Soft blobs */
@@ -324,6 +333,36 @@ body{
   #hedgehog-svg .draw-path {
     stroke-dashoffset: 0 !important;
     transition: none !important;
+  }
+}
+
+/* Dark mode tweaks */
+@media (prefers-color-scheme: dark) {
+  body { background: var(--bg); }
+
+  .blob { opacity: .14; }
+
+  #hedgehog-svg .draw-path {
+    stroke: var(--ink);
+    filter: drop-shadow(0 0 10px rgba(42, 109, 245, 0.3));
+  }
+
+  .nav-links a:hover {
+    background: rgba(238,238,240,.07);
+  }
+
+  .art-grid img {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+
+  .art-item:hover img {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+  }
+
+  .art-spotlight-stage .art-spotlight-img,
+  .art-spotlight-panel {
+    background: rgba(20,21,24,0.95);
+    color: var(--ink);
   }
 }
 
