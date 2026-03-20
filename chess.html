@@ -743,40 +743,44 @@ async function loadChessCom() {
     const archivesData = await archivesRes.json();
     const archives = archivesData.archives.slice(-12); // last 12 months
 
-    const ratingByMonth = [];
+    const allGames = [];
     for (const url of archives) {
-      const parts = url.split('/');
-      const year = parts[parts.length - 2];
-      const month = parts[parts.length - 1];
       try {
         const gamesRes = await fetch(url);
         if (!gamesRes.ok) continue;
         const gamesData = await gamesRes.json();
         const blitzGames = (gamesData.games || []).filter(g => g.time_class === 'blitz');
-        if (!blitzGames.length) continue;
-        const last = blitzGames[blitzGames.length - 1];
-        const rating = last.white?.username?.toLowerCase() === 'hog_hedge'
-          ? last.white.rating : last.black.rating;
-        ratingByMonth.push({
-          label: new Date(year, month - 1, 15).toISOString().split('T')[0],
-          rating
-        });
+        
+        for (const game of blitzGames) {
+          const isWhite = game.white?.username?.toLowerCase() === 'hog_hedge';
+          const rating = isWhite ? game.white.rating : game.black.rating;
+          const timestamp = game.end_time; // Unix timestamp
+          if (rating && timestamp) {
+            allGames.push({ timestamp, rating });
+          }
+        }
       } catch { continue; }
     }
 
-    const statsRes = await fetch('https://api.chess.com/pub/player/hog_hedge/stats');
-    if (!statsRes.ok) throw new Error('Stats HTTP ' + statsRes.status);
-    const stats = await statsRes.json();
-    const currentRating = stats?.chess_blitz?.last?.rating;
+    if (!allGames.length) throw new Error('No games found');
 
-    if (!ratingByMonth.length && !currentRating) throw new Error('No data');
+    // Sort by timestamp
+    allGames.sort((a, b) => a.timestamp - b.timestamp);
 
-    const labels = ratingByMonth.map(r => r.label);
-    const values = ratingByMonth.map(r => r.rating);
-    if (currentRating && values[values.length - 1] !== currentRating) {
-      labels.push(new Date().toISOString().split('T')[0]);
-      values.push(currentRating);
+    // Sample: take every Nth game to get ~50-100 data points
+    const targetPoints = 80;
+    const step = Math.max(1, Math.floor(allGames.length / targetPoints));
+    const sampled = [];
+    for (let i = 0; i < allGames.length; i += step) {
+      sampled.push(allGames[i]);
     }
+    // Always include the very last game
+    if (sampled[sampled.length - 1] !== allGames[allGames.length - 1]) {
+      sampled.push(allGames[allGames.length - 1]);
+    }
+
+    const labels = sampled.map(g => new Date(g.timestamp * 1000).toISOString().split('T')[0]);
+    const values = sampled.map(g => g.rating);
 
     if (values.length < 2) throw new Error('Not enough data points');
 
