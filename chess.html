@@ -26,6 +26,37 @@
       margin: 0 auto;
       position: relative;
     }
+
+    .chess-knight {
+      position: absolute;
+      top: -40px;
+      right: 20px;
+      width: clamp(80px, 12vw, 140px);
+      height: auto;
+      color: var(--ink);
+      opacity: 0.15;
+      animation: knight-float 6s ease-in-out infinite, knight-fade-in 1s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes knight-float {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-12px) rotate(2deg); }
+    }
+
+    @keyframes knight-fade-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 0.15; transform: translateY(0); }
+    }
+
+    @media (max-width: 720px) {
+      .chess-knight {
+        top: -20px;
+        right: 10px;
+        width: 70px;
+        opacity: 0.1;
+      }
+    }
     .chess-hero h1 {
       margin: 16px 0 12px;
       font-size: clamp(36px, 5vw, 62px);
@@ -321,6 +352,7 @@
           radial-gradient(ellipse 40% 50% at 5% 90%, rgba(124,58,237,0.10) 0%, transparent 70%);
       }
       .tf-btn.active { background: #eeeef0; color: #0e0f11; border-color: #eeeef0; }
+      .chess-knight { opacity: 0.12; }
     }
   </style>
 </head>
@@ -346,6 +378,12 @@
         </svg>
         Back to home
       </a>
+      
+      <!-- Animated chess knight -->
+      <svg class="chess-knight" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path fill="currentColor" d="M60.81 476.91h300v-60h-300v60zm233.79-347.3l13.94 7.39c31.88-43.62 61.34-31.85 61.34-31.85l-21.62 53 35.64 19 2.87 33 64.42 108.75-43.55 29.37s-26.82-36.39-39.65-43.66c-10.66-6-41.22-10.25-56.17-12l-67.54-76.91-12 10.56 37.15 42.31c-.13.18-.25.37-.38.57-35.78 58.17 23 105.69 68.49 131.78H84.14C93 85 294.6 129.61 294.6 129.61z"/>
+      </svg>
+
       <h1>Chess Progress</h1>
       <p>Live blitz rating history pulled from Lichess and Chess.com.</p>
       <div class="chess-meta">
